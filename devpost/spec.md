@@ -47,7 +47,7 @@ PRD ref: `prd.md > The Core Journey`.
 | Server | Python 3.12 + FastAPI + Uvicorn | Learner's choice (knows Python). | https://fastapi.tiangolo.com/ |
 | Data validation | Pydantic v2 (comes with FastAPI) | Same classes define API shapes *and* Claude's output shape. | https://docs.pydantic.dev/ |
 | Database | SQLite via Python's built-in `sqlite3` | Learner agreed; one file, no server, no ORM. | https://docs.python.org/3/library/sqlite3.html |
-| AI | Claude **Sonnet 5.5** (`claude-sonnet-5-5`) via the official `anthropic` Python SDK | Learner chose Sonnet. Structured outputs via `client.messages.parse(..., output_format=<PydanticModel>)`. | https://platform.claude.com/docs/en/build-with-claude/structured-outputs.md |
+| AI | Claude **Sonnet 5.5** (`claude-sonnet-5-5`) via the official `anthropic` Python SDK | Learner chose Sonnet. Structured outputs via `client.beta.messages.parse(..., output_format=<PydanticModel>)` (beta surface for the refusal fallback). | https://platform.claude.com/docs/en/build-with-claude/structured-outputs.md |
 | Secrets | `python-dotenv` loading `server/.env` | Keeps `ANTHROPIC_API_KEY` out of code and git. | https://pypi.org/project/python-dotenv/ |
 | Tests | `pytest` (server) + `tsc` type check (app) | Proportional checks; no browser test framework. | https://docs.pytest.org/ |
 
@@ -233,7 +233,7 @@ Huf/
 ### Claude API (Anthropic)
 - **Model:** `claude-sonnet-5-5` (learner's choice). Pricing: $2 / M input tokens, $10 / M output tokens. Each Huf call is roughly 1–3K tokens → well under a cent per call. Docs: https://platform.claude.com/docs/en/about-claude/models/overview.md · pricing: https://platform.claude.com/docs/en/about-claude/pricing.md
 - **Auth:** `ANTHROPIC_API_KEY` in `server/.env`; the SDK reads it from the environment (`anthropic.Anthropic()`).
-- **Call shape (both functions):** `client.beta.messages.parse(model="claude-sonnet-5-5", max_tokens=4000, system=<rules>, messages=[{"role":"user","content":<payload>}], output_format=<Extraction|Answer>)` → `response.parsed_output` is a validated Pydantic object. Check `response.stop_reason` first (`refusal` / `max_tokens` → error state). Effort `low` intended for speed (verify, see Stack).
+- **Call shape (both functions):** `client.beta.messages.parse(model="claude-sonnet-5-5", max_tokens=8000, system=<rules>, messages=[{"role":"user","content":<payload>}], output_format=<Extraction|Answer>)` → `response.parsed_output` is a validated Pydantic object. Check `response.stop_reason` first (`refusal` / `max_tokens` → error state). Effort `low` for speed (verified in slice 1, see Stack).
 - **Refusal fallback:** enabled by default — `fallbacks="default"` with beta `server-side-fallback-2026-07-01` (Claude API only). Learner may turn it off. Docs: https://platform.claude.com/docs/en/build-with-claude/refusals-and-fallback
 - **Errors:** catch `anthropic.RateLimitError`, `anthropic.APIStatusError`, `anthropic.APIConnectionError` (most-specific first) → HTTP 502 with a friendly message. SDK retries 429/5xx twice automatically.
 - **SDK docs:** https://github.com/anthropics/anthropic-sdk-python
@@ -298,7 +298,7 @@ Clarified by design: Claude receives only saved items with IDs, must return `fou
 
 **To verify early in the build**
 - ~~`parse()` + `effort`, fallback with `parse()`~~ — verified in slice 1 (see Stack).
-- Web Speech API behavior on this Mac/Chrome (permission prompt, `no-speech` timing).
+- ~~Web Speech API behavior on this Mac/Chrome~~ — verified by the learner in slice 4 and final review (live captions, pauses, Done, permission prompt).
 
 **Carried from `prd.md > Open Questions`**
 - Ask Huf voice input reuses `useSpeech` with a small mic in the input row — resolved here.
