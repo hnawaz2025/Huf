@@ -73,23 +73,25 @@ Build mode: fast (learner said "move on" after two prompts; can switch to learn 
 
 - [x] Early usable behavior explored — after slice 3: the whole kernel works by typing (capture → save → ask). Feedback here can still shape voice, Memories, and polish. Learner: "it all works perfectly"; asked that Ask Huf get voice (already planned in slice 4).
 - [x] Visual design checkpoint — after slice 5, before slice 6: review every screen against `spec.md > Look and Feel` for a distinctive, minimal, premium consumer feel (not generic AI styling); agreed fixes recorded and done before the demo check. Learner reviewed every screen: "everything looks amazing" — no changes requested (agent's noted options: stronger resting mic, listening-screen gap, smaller mic when Home has content, lighter card labels — not adopted).
-- [ ] Final kick-the-tires exploration and feedback completed
+- [x] Final kick-the-tires exploration and feedback completed — learner ran the full story by voice plus awkward inputs: "all works perfectly and errors were thrown at the right time."
 
 ## Final Review
 
-- [ ] Final review complete — feedback resolved and learner confirms ready to ship
+No changes requested at final review.
+
+- [x] Final review complete — feedback resolved and learner confirms ready to ship ("it all looks good to me")
 
 ## Code Tour and App Map
 
-- [ ] Learning activity complete — guided route, focused alternative, prior practice connected, or brief recap
-- [ ] Optional edit and transfer reflection addressed — offered/declined/already covered/not applicable as appropriate
-- [ ] `devpost/app-map.html` generated from finished code, checked, and shown, including a project-grounded practice to reuse
+- [x] Learning activity complete — brief evidence-based recap connected to the learner's scoping goal (recap, not hands-on practice)
+- [x] Optional edit and transfer reflection addressed — scoping practice question offered and declined; no code edit (not applicable to a scoping recap)
+- [x] `devpost/app-map.html` generated from finished code, checked, and shown, including a project-grounded practice to reuse
 
-Activity and evidence:
-Route and stops:
-Edit outcome:
-Reflection:
-Activity mode:
+Activity and evidence: Recap tied to the Desired Learning Outcome (scoping). Evidence: `scope.md` kernel + Later/Cut lists; kernel built first in slices 1–3 and working by typing at the early checkpoint; `server/scripts/demo_check.py` 17/17 on all three demo cases; nothing from Later built; "Which Sarah?" added as its smallest version (Review picker).
+Route and stops: Reference route only (not toured): `web/src/screens/AskHuf.tsx` `send` → `server/llm.py` `ANSWER_SYSTEM` / `answer_question` → `server/main.py` `ask` grounding check.
+Edit outcome: Not applicable.
+Reflection: Practice question ("smallest demoable version of a Later item") offered; learner declined and moved to demo planning.
+Activity mode: Recap with app map; static map checked in headless Chrome with JavaScript disabled.
 
 ## Revisions
 
@@ -105,3 +107,4 @@ Activity mode:
 - Slice 4 mechanical checks use a dev-only speech test double (`window.__hufFakeSpeech`, honored only when `import.meta.env.DEV`) injected by the verification script; it is absent from the production build. Real recognition is verified by the learner in Chrome.
 - Speech keeps listening through pauses (Chrome ends sessions after silence; the hook restarts and keeps prior text) until Done; an empty Done reports "didn't hear anything" rather than sending blank text.
 - Through the Vite proxy a stopped API server returns HTTP 500 rather than a network error, so the app treats any 5xx without Huf's JSON `detail` as "can't reach Huf's server"; a key problem surfaces as its own message, and a missing key is caught at load via `/api/health`.
+- `.gitignore` widened from `server/huf.db` to `server/*.db` — the learner's pre-demo data was moved to `huf.backup.db`, which the old rule didn't cover.

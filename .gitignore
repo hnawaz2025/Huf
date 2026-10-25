@@ -17,7 +17,7 @@ node_modules/
 dist/
 
 # Local data
-server/huf.db
+server/*.db
 *.db-journal
 
 # OS
