@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Huf — Scope</title>
+<!-- Companion view of devpost/scope.md. The Markdown file is canonical. -->
+<style>
+  :root {
+    --ivory: #FBF8F3;
+    --card: #FFFFFF;
+    --ink: #1E1B3A;
+    --muted: #6B6788;
+    --indigo: #2E2A6B;
+    --lavender: #D9D3F5;
+    --lavender-soft: #EEEAFB;
+    --amber: #F3E3C4;
+    --amber-ink: #7A5414;
+    --line: #E6E1F2;
+    --cut: #F4E4E4;
+    --cut-ink: #8A3A3A;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ivory: #15132A;
+      --card: #1F1C3B;
+      --ink: #EEEBFA;
+      --muted: #A7A2C7;
+      --indigo: #B9B0F2;
+      --lavender: #3B3570;
+      --lavender-soft: #2A2652;
+      --amber: #4A3A1E;
+      --amber-ink: #F1D49C;
+      --line: #34305E;
+      --cut: #46262B;
+      --cut-ink: #F0B5B5;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ivory);
+    color: var(--ink);
+    font: 17px/1.6 ui-serif, "Iowan Old Style", Georgia, serif;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 48px 20px 80px; }
+  .eyebrow, h2, .chip, summary, .label, .status, svg text {
+    font-family: ui-sans-serif, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  }
+  .eyebrow { color: var(--muted); font-size: 13px; letter-spacing: .08em; text-transform: uppercase; }
+  h1 { font-size: 56px; line-height: 1; margin: 8px 0 6px; color: var(--indigo); letter-spacing: -.02em; font-weight: 600; }
+  .tagline { font-style: italic; color: var(--muted); margin: 0 0 20px; }
+  .status { display: inline-block; font-size: 12px; padding: 3px 10px; border-radius: 99px; background: var(--amber); color: var(--amber-ink); font-weight: 600; }
+  h2 { font-size: 14px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 48px 0 12px; font-weight: 600; }
+  .kernel {
+    background: var(--card); border: 1px solid var(--line); border-radius: 20px;
+    padding: 28px; box-shadow: 0 1px 0 var(--line), 0 12px 40px -24px rgba(46,42,107,.35);
+  }
+  .kernel p.big { font-size: 24px; line-height: 1.35; margin: 0 0 16px; }
+  .quote { border-left: 3px solid var(--lavender); padding-left: 14px; color: var(--muted); font-style: italic; }
+  .diagram { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 16px; }
+  .diagram svg { width: 100%; height: auto; display: block; }
+  .steps { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+  .steps button {
+    font: 600 13px ui-sans-serif, -apple-system, sans-serif; border: 1px solid var(--line);
+    background: var(--lavender-soft); color: var(--indigo); padding: 6px 12px; border-radius: 99px; cursor: pointer;
+  }
+  .steps button[aria-pressed="true"] { background: var(--indigo); color: var(--ivory); border-color: var(--indigo); }
+  .stepnote { margin: 12px 4px 0; min-height: 3.2em; color: var(--ink); }
+  .g { transition: opacity .35s ease; }
+  .dim .g { opacity: .18; }
+  .dim .g.on { opacity: 1; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 620px) { .grid { grid-template-columns: 1fr; } h1 { font-size: 44px; } }
+  .panel { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 18px 20px; }
+  .panel p { margin: 0; }
+  .label { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 6px; }
+  details { background: var(--card); border: 1px solid var(--line); border-radius: 16px; margin-bottom: 12px; overflow: hidden; }
+  summary { cursor: pointer; padding: 16px 20px; font-weight: 600; font-size: 15px; display: flex; align-items: center; gap: 10px; list-style: none; }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: "+"; margin-left: auto; color: var(--muted); font-weight: 400; font-size: 20px; }
+  details[open] summary::after { content: "–"; }
+  details ul { margin: 0; padding: 0 20px 16px 40px; }
+  details li { margin: 6px 0; }
+  .chip { font-size: 12px; padding: 2px 9px; border-radius: 99px; font-weight: 600; }
+  .now { background: var(--lavender); color: var(--indigo); }
+  .later { background: var(--amber); color: var(--amber-ink); }
+  .cutc { background: var(--cut); color: var(--cut-ink); }
+  .why { color: var(--muted); }
+  footer { margin-top: 56px; color: var(--muted); font-size: 14px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">Devpost Learn · Scope</div>
+  <h1>huf</h1>
+  <p class="tagline">Say it once. Huf remembers.</p>
+  <span class="status">Approved</span>
+
+  <h2>The unique kernel</h2>
+  <div class="kernel">
+    <p class="big">Huf remembers <strong>context</strong>, not just commands. One natural sentence becomes a memory <em>and</em> a commitment, both tied to the right person — and one question later brings both back, with the saved items as proof.</p>
+    <p class="quote">“Most tools expect us to know whether we’re creating a task, writing a note, or setting a reminder. But that’s not how our brains work.”</p>
+  </div>
+
+  <h2>The core loop</h2>
+  <div class="diagram">
+    <svg id="loop" viewBox="0 0 720 300" role="img" aria-label="Core loop: speak, Huf sorts into a memory and a reminder linked to Sarah, review and save, refresh, ask, and get an answer with source cards.">
+      <defs>
+        <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/>
+        </marker>
+      </defs>
+      <!-- 1 speak -->
+      <g class="g" data-step="1">
+        <circle cx="70" cy="90" r="42" fill="var(--indigo)"/>
+        <rect x="62" y="68" width="16" height="28" rx="8" fill="var(--ivory)"/>
+        <path d="M54 90 a16 16 0 0 0 32 0" stroke="var(--ivory)" stroke-width="3" fill="none"/>
+        <line x1="70" y1="106" x2="70" y2="114" stroke="var(--ivory)" stroke-width="3"/>
+        <text x="70" y="155" text-anchor="middle" font-size="14" font-weight="600" fill="var(--ink)">1 · Speak</text>
+        <text x="70" y="173" text-anchor="middle" font-size="12" fill="var(--muted)">tap, talk naturally</text>
+      </g>
+      <line class="g" data-step="2" x1="118" y1="90" x2="188" y2="90" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#ar)"/>
+      <!-- 2 sort -->
+      <g class="g" data-step="2">
+        <rect x="196" y="30" width="200" height="54" rx="12" fill="var(--lavender-soft)" stroke="var(--lavender)"/>
+        <text x="210" y="52" font-size="11" font-weight="700" fill="var(--indigo)">MEMORY · Sarah</text>
+        <text x="210" y="71" font-size="13" fill="var(--ink)">Moving to Seattle in December</text>
+        <rect x="196" y="96" width="200" height="54" rx="12" fill="var(--amber)" stroke="var(--amber)"/>
+        <text x="210" y="118" font-size="11" font-weight="700" fill="var(--amber-ink)">REMINDER · Sarah · tomorrow</text>
+        <text x="210" y="137" font-size="13" fill="var(--ink)">Send her the article</text>
+        <text x="296" y="175" text-anchor="middle" font-size="14" font-weight="600" fill="var(--ink)">2 · Huf sorts it</text>
+        <text x="296" y="193" text-anchor="middle" font-size="12" fill="var(--muted)">review, edit, save</text>
+      </g>
+      <line class="g" data-step="3" x1="402" y1="90" x2="472" y2="90" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#ar)"/>
+      <!-- 3 remember -->
+      <g class="g" data-step="3">
+        <rect x="480" y="48" width="64" height="84" rx="10" fill="var(--card)" stroke="var(--line)" stroke-width="2"/>
+        <line x1="492" y1="72" x2="532" y2="72" stroke="var(--lavender)" stroke-width="6" stroke-linecap="round"/>
+        <line x1="492" y1="90" x2="532" y2="90" stroke="var(--amber)" stroke-width="6" stroke-linecap="round"/>
+        <line x1="492" y1="108" x2="520" y2="108" stroke="var(--lavender)" stroke-width="6" stroke-linecap="round"/>
+        <text x="512" y="160" text-anchor="middle" font-size="14" font-weight="600" fill="var(--ink)">3 · Kept</text>
+        <text x="512" y="178" text-anchor="middle" font-size="12" fill="var(--muted)">survives refresh</text>
+      </g>
+      <path class="g" data-step="4" d="M548 90 C 640 90, 660 150, 640 210" stroke="var(--muted)" stroke-width="1.5" fill="none" marker-end="url(#ar)"/>
+      <!-- 4 ask -->
+      <g class="g" data-step="4">
+        <rect x="150" y="222" width="500" height="58" rx="14" fill="var(--card)" stroke="var(--indigo)" stroke-width="1.5"/>
+        <text x="168" y="245" font-size="12" font-weight="700" fill="var(--indigo)">YOU: What did Sarah tell me, and do I owe her anything?</text>
+        <text x="168" y="267" font-size="13" fill="var(--ink)">HUF: Sarah is moving to Seattle in December — and you promised to send her an article tomorrow.</text>
+        <text x="70" y="248" text-anchor="middle" font-size="14" font-weight="600" fill="var(--ink)">4 · Ask</text>
+        <text x="70" y="266" text-anchor="middle" font-size="12" fill="var(--muted)">answer + sources</text>
+      </g>
+    </svg>
+    <div class="steps" role="group" aria-label="Walk through the loop">
+      <button data-go="0" aria-pressed="true">Whole loop</button>
+      <button data-go="1" aria-pressed="false">1 · Speak</button>
+      <button data-go="2" aria-pressed="false">2 · Sort</button>
+      <button data-go="3" aria-pressed="false">3 · Kept</button>
+      <button data-go="4" aria-pressed="false">4 · Ask</button>
+    </div>
+    <p class="stepnote" id="note">One big mic, natural speech, no categories up front. Every capture makes recall more valuable.</p>
+  </div>
+
+  <h2>Who it’s for · why it matters</h2>
+  <div class="grid">
+    <div class="panel">
+      <div class="label">The person</div>
+      <p>A daily commuter with “a bazzillion things” on their mind, who forgets promises — like calling their aunt — and feels guilty. Siri needs command phrasing; Alexa isn’t on the go.</p>
+    </div>
+    <div class="panel">
+      <div class="label">The feeling</div>
+      <p><em>“I said it once, and I can trust that I won’t lose it.”</em></p>
+    </div>
+  </div>
+
+  <h2>What “working” looks like</h2>
+  <div class="panel">
+    <p>Tap the mic, speak the Sarah sentence. See a <strong>memory card</strong> and a <strong>reminder card</strong>, both linked to Sarah. Fix anything, save. <strong>Refresh.</strong> Ask what Sarah told you and what you owe her — Huf answers from what you actually saved and shows the cards beneath. Then: “Amazon by Friday, dentist tomorrow morning, rent on the first of every month” → three reminders with the right dates.</p>
+    <p class="why" style="margin-top:10px">“It shouldn’t be a hardcoded response that only works for our demo.”</p>
+  </div>
+
+  <h2>The boundary</h2>
+  <details open>
+    <summary><span class="chip now">Now</span> The proof of concept</summary>
+    <ul>
+      <li>Tap-to-talk with real transcription; typed fallback.</li>
+      <li>One input → many items, each a memory or reminder, linked to a person, with dates resolved from today (recurrence labeled).</li>
+      <li>Review before saving: edit, delete, confirm. Nothing saved silently.</li>
+      <li>Saved items persist across refresh.</li>
+      <li>Ask Huf: answer grounded only in saved items, sources shown; honest “I don’t have that.”</li>
+      <li>Both demo beats — Sarah first in priority, brain dump second.</li>
+    </ul>
+  </details>
+  <details>
+    <summary><span class="chip later">Later</span> Worth doing, not now</summary>
+    <ul>
+      <li>Clarifying questions when something is ambiguous.</li>
+      <li>Browsing and managing full history.</li>
+      <li>Broad questions (“What am I forgetting this week?”) — may partly work, not tuned for.</li>
+      <li>Actual notifications at the due time.</li>
+      <li>Discipline: follow-through, patterns, gentle nudges — “not a habit tracker or productivity coach right now.”</li>
+    </ul>
+  </details>
+  <details>
+    <summary><span class="chip cutc">Cut</span> Named, with reasons</summary>
+    <ul>
+      <li><strong>Contacts integration</strong> <span class="why">— people come from what you say.</span></li>
+      <li><strong>Calendar syncing</strong> <span class="why">— auth and complexity that don’t prove context memory.</span></li>
+      <li><strong>Recurring notifications</strong> <span class="why">— recurrence is labeled, not scheduled.</span></li>
+      <li><strong>“Hey Huf” wake word / always-on listening</strong> <span class="why">— tap-to-talk is enough; avoids privacy concerns.</span></li>
+      <li><strong>Accounts &amp; multi-device sync</strong> <span class="why">— one person, one device proves the loop.</span></li>
+    </ul>
+  </details>
+
+  <footer>Companion to <code>devpost/scope.md</code> — the Markdown file is the source of truth.</footer>
+</div>
+<script>
+  const notes = [
+    "One big mic, natural speech, no categories up front. Every capture makes recall more valuable.",
+    "Tap one big mic and talk like you would to a friend. Real speech, really transcribed — typing works too.",
+    "Huf splits one sentence into a memory and a reminder, both linked to Sarah. You see it all and fix anything before saving.",
+    "Saved items stay put — refresh the page and they’re still there.",
+    "The “oh, that’s cool” beat: one question, one answer drawn only from what you saved, with the original cards shown as proof."
+  ];
+  const svg = document.getElementById('loop');
+  const btns = document.querySelectorAll('.steps button');
+  btns.forEach(b => b.addEventListener('click', () => {
+    const n = +b.dataset.go;
+    btns.forEach(x => x.setAttribute('aria-pressed', x === b));
+    svg.classList.toggle('dim', n > 0);
+    svg.querySelectorAll('.g').forEach(g => g.classList.toggle('on', +g.dataset.step === n));
+    document.getElementById('note').textContent = notes[n];
+  }));
+</script>
+</body>
+</html>

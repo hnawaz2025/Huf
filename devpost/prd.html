@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Huf — Product Requirements</title>
+<!-- Companion view of devpost/prd.md. The Markdown file is canonical. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ivory: #F8F5EE;
+    --surface: #FFFDF9;
+    --ink: #1F1D47;
+    --muted: #6E6A86;
+    --line: #E7E2D8;
+    --lav: #B9B0DA;
+    --lav-soft: #ECE8F6;
+    --rem: #F1EADB;
+    --rem-ink: #6B5320;
+    --ok: #3F6B4F;
+    --warn: #8A4B3A;
+    --r: 8px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ivory: #14132A; --surface: #1C1B36; --ink: #ECEAF7; --muted: #A09CBB; --line: #2E2C50;
+      --lav: #8C83C2; --lav-soft: #28264A; --rem: #3A3220; --rem-ink: #E9D3A0; --ok: #8FC5A1; --warn: #E3A593;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--ivory); color: var(--ink);
+    font: 16px/1.55 Inter, ui-sans-serif, -apple-system, "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 48px 20px 80px; }
+  .eyebrow { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  h1 { font-size: 40px; letter-spacing: -.03em; margin: 6px 0 4px; font-weight: 700; }
+  h1 .dot { color: var(--lav); }
+  .sub { color: var(--muted); margin: 0 0 14px; max-width: 620px; }
+  .status { display: inline-block; font-size: 12px; font-weight: 600; padding: 3px 9px; border-radius: 4px; background: var(--rem); color: var(--rem-ink); }
+  h2 { font-size: 13px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 600; margin: 56px 0 14px; }
+  .expand { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
+  .expand > div { background: var(--surface); padding: 14px 16px; font-size: 14px; }
+  .expand .h { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 600; }
+  .expand .was { color: var(--muted); }
+
+  /* journey */
+  .journey { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 12px; overflow-x: auto; }
+  .journey svg { min-width: 760px; width: 100%; height: auto; display: block; }
+  .node { cursor: pointer; }
+  .node rect { fill: var(--surface); stroke: var(--line); stroke-width: 1.5; transition: fill .2s, stroke .2s; }
+  .node text { fill: var(--ink); font: 600 12px Inter, ui-sans-serif, sans-serif; }
+  .node .n { fill: var(--muted); font-weight: 500; font-size: 10px; }
+  .node.on rect { fill: var(--ink); stroke: var(--ink); }
+  .node.on text { fill: var(--ivory); }
+  .node:focus { outline: none; }
+  .node:focus-visible rect { stroke: var(--lav); stroke-width: 3; }
+  .edge { stroke: var(--lav); stroke-width: 1.5; fill: none; }
+
+  .detail { display: grid; grid-template-columns: 280px 1fr; gap: 28px; margin-top: 20px; align-items: start; }
+  @media (max-width: 760px) { .detail, .expand { grid-template-columns: 1fr; } .phone { margin: 0 auto; } }
+  .controls { display: flex; gap: 8px; margin-top: 12px; }
+  .controls button { font: 600 13px Inter, ui-sans-serif, sans-serif; background: transparent; color: var(--ink); border: 1px solid var(--line); border-radius: 6px; padding: 6px 12px; cursor: pointer; }
+  .controls button:hover { border-color: var(--lav); }
+
+  /* phone mock */
+  .phone { width: 280px; height: 560px; border: 1.5px solid var(--line); border-radius: 28px; background: var(--ivory); padding: 22px 18px 0; position: relative; overflow: hidden; }
+  .ph-top { font-weight: 700; letter-spacing: -.02em; font-size: 17px; }
+  .ph-top .dot { color: var(--lav); }
+  .ph-greet { font-size: 22px; font-weight: 600; letter-spacing: -.02em; margin: 26px 0 0; }
+  .mic { width: 104px; height: 104px; border-radius: 50%; background: var(--ink); margin: 34px auto 8px; display: grid; place-items: center; position: relative; }
+  .mic svg { width: 34px; height: 34px; }
+  .mic { color: var(--ivory); }
+  .mic.live { transform: scale(1.08); }
+  .mic.live::before, .mic.live::after { content: ""; position: absolute; inset: -12px; border-radius: 50%; border: 2px solid var(--lav); animation: pulse 1.8s ease-out infinite; }
+  .mic.live::after { animation-delay: .9s; }
+  @keyframes pulse { from { opacity: .9; transform: scale(.9); } to { opacity: 0; transform: scale(1.35); } }
+  @media (prefers-reduced-motion: reduce) { .mic.live::before, .mic.live::after { animation: none; opacity: .5; } }
+  .center { text-align: center; }
+  .small { font-size: 12px; color: var(--muted); }
+  .link { font-size: 12px; color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+  .sec { font-size: 10px; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); font-weight: 600; margin: 20px 0 6px; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 9px 10px; font-size: 12px; margin-bottom: 6px; display: flex; gap: 8px; align-items: flex-start; }
+  .card .ic { width: 14px; height: 14px; flex: none; margin-top: 2px; }
+  .card .meta { color: var(--muted); font-size: 11px; }
+  .card.rem { border-left: 3px solid var(--rem-ink); }
+  .card.mem { border-left: 3px solid var(--lav); }
+  .card.done { opacity: .6; }
+  .card.done .t { text-decoration: line-through; }
+  .caption { font-size: 15px; line-height: 1.45; margin-top: 26px; }
+  .caption .faint { color: var(--muted); }
+  .btn { display: block; text-align: center; background: var(--ink); color: var(--ivory); border-radius: 6px; padding: 10px; font-size: 13px; font-weight: 600; }
+  .btn.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+  .bottom { position: absolute; left: 18px; right: 18px; bottom: 54px; }
+  .nav { position: absolute; left: 0; right: 0; bottom: 0; height: 46px; border-top: 1px solid var(--line); background: var(--surface); display: flex; justify-content: space-around; align-items: center; font-size: 11px; color: var(--muted); font-weight: 500; }
+  .nav .on { color: var(--ink); font-weight: 700; }
+  .bubble { font-size: 12px; padding: 9px 11px; border-radius: 6px; margin-bottom: 8px; }
+  .bubble.me { background: var(--ink); color: var(--ivory); margin-left: 30px; }
+  .bubble.huf { background: var(--surface); border: 1px solid var(--line); margin-right: 16px; }
+  .quote { font-size: 11px; color: var(--muted); background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; margin-top: 10px; }
+  .dots { display: flex; gap: 6px; justify-content: center; margin-top: 14px; }
+  .dots i { width: 7px; height: 7px; border-radius: 50%; background: var(--lav); animation: b 1.2s infinite; }
+  .dots i:nth-child(2) { animation-delay: .2s; } .dots i:nth-child(3) { animation-delay: .4s; }
+  @keyframes b { 0%,80%,100% { opacity: .3; } 40% { opacity: 1; } }
+
+  .info h3 { margin: 0 0 4px; font-size: 22px; letter-spacing: -.02em; }
+  .info .src { font-size: 12px; color: var(--muted); margin-bottom: 14px; }
+  .info .what { margin: 0 0 18px; }
+  .info h4 { font-size: 11px; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); margin: 18px 0 8px; }
+  .crit { list-style: none; padding: 0; margin: 0; }
+  .crit li { padding: 7px 0 7px 26px; border-top: 1px solid var(--line); position: relative; font-size: 14px; }
+  .crit li::before { content: ""; position: absolute; left: 2px; top: 11px; width: 12px; height: 12px; border: 1.5px solid var(--lav); border-radius: 3px; }
+  .states li::before { border-radius: 50%; border-color: var(--warn); }
+  .tag { font-size: 10px; font-weight: 600; color: var(--rem-ink); background: var(--rem); padding: 1px 6px; border-radius: 3px; margin-left: 6px; vertical-align: 1px; }
+
+  details { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); margin-bottom: 10px; }
+  summary { padding: 14px 18px; font-weight: 600; cursor: pointer; list-style: none; display: flex; align-items: center; gap: 10px; }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: "+"; margin-left: auto; color: var(--muted); font-weight: 400; }
+  details[open] summary::after { content: "–"; }
+  details .body { padding: 0 18px 14px; font-size: 14px; }
+  details ul { margin: 0; padding-left: 18px; }
+  details li { margin: 5px 0; }
+  .pill { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 4px; }
+  .p-now { background: var(--lav-soft); color: var(--ink); }
+  .p-def { background: var(--rem); color: var(--rem-ink); }
+  .p-no { background: transparent; border: 1px solid var(--line); color: var(--muted); }
+  .p-q { background: var(--ink); color: var(--ivory); }
+  footer { margin-top: 56px; font-size: 13px; color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">Devpost Learn · Product Requirements</div>
+  <h1>huf<span class="dot">.</span></h1>
+  <p class="sub">A calm, mobile-first voice memory assistant for a busy commuter: say a thought once, review what Huf understood, and ask about it later.</p>
+  <span class="status" id="status">Approved</span>
+
+  <h2>Scope said… now we know</h2>
+  <div class="expand">
+    <div><div class="h">Scope said</div><span class="was">“Tap one big mic, talk naturally.”</span></div>
+    <div><div class="h">Now we know</div>Mic expands with a lavender pulse, live captions as you speak, one <strong>Done</strong> button, then “Making sense of your thoughts…”</div>
+    <div><span class="was">“See what Huf understood, fix anything.”</span></div>
+    <div>Transcript on top, typed cards below (bookmark = memory, clock = reminder), edit or remove any card, one <strong>Save both</strong>.</div>
+    <div><span class="was">“Ask Huf a question.”</span></div>
+    <div>Voice or typing, a simple chat, source cards beneath the answer, completed reminders described as done, and an honest “I don’t have anything saved about that yet.”</div>
+    <div><span class="was">“Browsing a full history” — Later.</span></div>
+    <div>Pulled into now, kept basic: browse, detail, edit, delete, Pending ⇄ Completed. No folders or filters.</div>
+  </div>
+
+  <h2>The journey — click a screen</h2>
+  <div class="journey">
+    <svg viewBox="0 0 900 150" role="tablist" aria-label="Core journey screens">
+      <path class="edge" d="M110 60 H140"/><path class="edge" d="M250 60 H280"/><path class="edge" d="M390 60 H420"/>
+      <path class="edge" d="M530 60 H560"/><path class="edge" d="M670 60 H700"/>
+      <path class="edge" d="M475 85 C 475 135, 145 135, 75 92" stroke-dasharray="4 4"/>
+      <text x="300" y="140" fill="var(--muted)" font-size="11" font-family="Inter, sans-serif">after save → back to Home, new items visible</text>
+    </svg>
+  </div>
+  <div class="controls">
+    <button id="prev" aria-label="Previous screen">← Previous</button>
+    <button id="next" aria-label="Next screen">Next →</button>
+  </div>
+
+  <div class="detail">
+    <div class="phone" id="phone" aria-live="polite"></div>
+    <div class="info" id="info"></div>
+  </div>
+
+  <h2>The boundary</h2>
+  <details open>
+    <summary><span class="pill p-now">Building</span> What the proof of concept must do</summary>
+    <div class="body"><ul>
+      <li>Home: mic, live-caption listening, Done, processing, “Type instead.”</li>
+      <li>One input → many memories/reminders, with people and dates (recurrence labeled).</li>
+      <li>Review: edit, remove, explicit save. Nothing saved silently.</li>
+      <li>Home sections: Coming up · Recently remembered (hidden when empty).</li>
+      <li>Memories: browse, detail, edit, delete, Pending ⇄ Completed.</li>
+      <li>Ask Huf: voice or typed, grounded, status-aware, sources shown, honest when empty.</li>
+      <li>Persistence across refresh on one device. Both demo beats with real speech.</li>
+    </ul></div>
+  </details>
+  <details>
+    <summary><span class="pill p-def">Deferred</span> Implied, but not now</summary>
+    <div class="body"><ul>
+      <li><strong>Search in Memories</strong> — Ask Huf already finds things.</li>
+      <li><strong>Clarifying-question conversations</strong> — editing on Review covers mistakes.</li>
+      <li><strong>Settings screen</strong> — only if a real need appears.</li>
+      <li><strong>Notifications at due time</strong> — scope Later.</li>
+      <li><strong>Persistent Ask Huf chat history</strong> — not needed to prove recall.</li>
+    </ul></div>
+  </details>
+  <details>
+    <summary><span class="pill p-no">Non-goals</span> Won’t do</summary>
+    <div class="body"><ul>
+      <li>Contacts · calendar sync · recurring notifications · wake word · accounts &amp; sync.</li>
+      <li>Folders, tags, advanced filters.</li>
+      <li>Hardcoded demo responses — every answer comes from saved data.</li>
+    </ul></div>
+  </details>
+  <details>
+    <summary><span class="pill p-q">Your decisions</span> Rules for the whole build</summary>
+    <div class="body"><ul>
+      <li><strong>Every visible button has a purpose and actually works.</strong> No settings icon.</li>
+      <li>No “which Sarah?” conversation — keep the person as spoken, never assume.</li>
+      <li>Reminders: Pending and Completed — “important for Huf’s accuracy.”</li>
+      <li>Accurate retrieval over a sophisticated chatbot.</li>
+      <li>Inter-style sans, flat surfaces, subtle radius; the mic is the signature.</li>
+    </ul></div>
+  </details>
+  <details>
+    <summary><span class="pill p-now">Resolved</span> Confirmed at review</summary>
+    <div class="body"><ul>
+      <li>Search stays deferred — Ask Huf is how you find things.</li>
+      <li>Ambiguous “Sarah”: kept as spoken, editable, never auto-matched.</li>
+    </ul></div>
+  </details>
+
+  <footer>Companion to <code>devpost/prd.md</code> — the Markdown file is the source of truth.</footer>
+</div>
+
+<script>
+const micSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>';
+const bm = '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3h12v18l-6-4-6 4z"/></svg>';
+const ck = '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
+const nav = on => `<div class="nav">${['Home','Memories','Ask Huf'].map(t => `<span class="${t===on?'on':''}">${t}</span>`).join('')}</div>`;
+const mem = (t, m) => `<div class="card mem">${bm}<div><div class="t">${t}</div><div class="meta">${m}</div></div></div>`;
+const rem = (t, m, d) => `<div class="card rem${d?' done':''}">${ck}<div><div class="t">${t}</div><div class="meta">${m}</div></div></div>`;
+const header = '<div class="ph-top">huf<span class="dot">.</span></div>';
+
+const screens = [
+  { id: 'first', label: 'First open', src: 'scope.md › The Core Loop',
+    what: 'Logo, greeting, the big mic, “Tap to talk,” and “Type instead.” Nothing else on first use — empty sections are hidden.',
+    crit: ['Within one second it’s obvious what to do.', 'No settings or profile icon.', 'Coming up / Recently remembered hidden when empty.'],
+    states: ['First use: only logo, greeting, mic, “Type instead.”'],
+    phone: () => `${header}<div class="ph-greet">What’s on your mind?</div><div class="mic">${micSvg}</div><div class="center small">Tap to talk</div><div class="center" style="margin-top:6px"><span class="link">Type instead</span></div>${nav('Home')}` },
+  { id: 'listen', label: 'Listening', src: 'prd.md › Capture by Voice',
+    what: 'The mic expands with a soft lavender pulse. Your words appear as live captions. One clear Done button — no other distractions.',
+    crit: ['Tapping the mic visibly enters listening.', 'Live captions while speaking.', 'Done stops listening.'],
+    states: ['Mic permission denied → explanation + try again / type instead.', 'Can’t hear / transcription fails → explanation + try again / type instead.'],
+    phone: () => `${header}<div class="caption">Sarah from work told me she’s moving to Seattle in December, <span class="faint">and I promised to send her…</span></div><div class="mic live">${micSvg}</div><div class="center small">Listening</div><div class="bottom"><div class="btn">Done</div></div>${nav('Home')}` },
+  { id: 'process', label: 'Processing', src: 'prd.md › Capture by Voice',
+    what: '“Making sense of your thoughts…” — a short, calm pause while Huf works out what you said.',
+    crit: ['Shown right after Done.'],
+    states: ['Processing fails → message, transcript kept so you can retry without re-speaking. <span class="tag">assumption</span>'],
+    phone: () => `${header}<div style="height:150px"></div><div class="center" style="font-weight:600">Making sense of your thoughts…</div><div class="dots"><i></i><i></i><i></i></div>${nav('Home')}` },
+  { id: 'review', label: 'Review', src: 'prd.md › Sorting Thoughts · Review Before Saving',
+    what: 'Original transcript on top, extracted cards below — bookmark for memories, clock for reminders — each editable or removable. One primary save button.',
+    crit: ['Sarah sentence → exactly one memory + one reminder.', 'Person attached exactly as said (“Sarah from work”).', 'Brain dump → three reminders; Friday / tomorrow / monthly resolved from today.', 'No invented times (“tomorrow morning” stays vague).', 'Nothing saved until you tap save.'],
+    states: ['Nothing found → explanation + try again / type instead. <span class="tag">assumption</span>', 'Ambiguous “Sarah” → kept as spoken, editable.'],
+    phone: () => `${header}<div class="quote">“Sarah from work told me she’s moving to Seattle in December, and I promised to send her an article tomorrow.”</div><div class="sec">Huf understood</div>${mem('Sarah from work is moving to Seattle in December', 'Memory · Sarah from work')}${rem('Send Sarah the article', 'Reminder · Tomorrow · Sarah from work')}<div class="bottom"><div class="btn">Save both</div></div>${nav('Home')}` },
+  { id: 'home', label: 'Home, after', src: 'prd.md › Home at a Glance',
+    what: 'Huf confirms the save and returns Home. The reminder appears under Coming up, the memory under Recently remembered.',
+    crit: ['Coming up: at most 2–3 pending reminders with due date.', 'Recently remembered: 1–2 latest memories.'],
+    states: ['Persists across refresh on this device.'],
+    phone: () => `${header}<div class="ph-greet" style="margin-top:16px">What’s on your mind?</div><div class="mic" style="width:84px;height:84px;margin-top:18px">${micSvg}</div><div class="center small">Tap to talk · <span class="link">Type instead</span></div><div class="sec">Coming up</div>${rem('Send Sarah the article','Tomorrow · Sarah from work')}<div class="sec">Recently remembered</div>${mem('Sarah from work is moving to Seattle in December','Sarah from work')}${nav('Home')}` },
+  { id: 'memories', label: 'Memories', src: 'prd.md › Memories',
+    what: 'Everything Huf remembers, types visible at a glance, person shown. Tap for details: edit, delete, or toggle Pending ⇄ Completed.',
+    crit: ['Lists all memories and reminders, typed and with person.', 'Edit and delete from details.', 'Pending ⇄ Completed toggle, status visible.', 'Changes survive refresh.'],
+    states: ['Empty → a calm line pointing to Home. <span class="tag">assumption</span>'],
+    phone: () => `${header}<div class="ph-greet" style="font-size:20px;margin-top:18px">Memories</div><div class="sec">Saved</div>${mem('Sarah from work is moving to Seattle in December','Memory · Sarah from work')}${rem('Send Sarah the article','Reminder · Tomorrow · Sarah from work')}${rem('Return Amazon package','Reminder · Friday')}${rem('Call the dentist','Reminder · Tomorrow morning')}${rem('Pay rent','Reminder · 1st of every month')}${nav('Memories')}` },
+  { id: 'ask', label: 'Ask Huf', src: 'scope.md › What “Working” Looks Like',
+    what: 'A simple chat. Ask by voice or typing; Huf answers only from what you saved and shows the cards it used beneath the answer.',
+    crit: ['Sarah question → mentions Seattle in December and the pending article.', 'Source cards shown beneath.', 'Completed reminder → described as done.', 'Never-saved topic → “I don’t have anything saved about that yet.”', 'Edit Seattle → Portland and the answer changes (not hardcoded).'],
+    states: ['Nothing matches → the honest empty answer.', 'Chat history doesn’t persist. <span class="tag">assumption</span>'],
+    phone: () => `${header}<div style="margin-top:18px"></div><div class="bubble me">What did Sarah from work tell me, and do I owe her anything?</div><div class="bubble huf">Sarah from work told you she’s moving to Seattle in December. You also promised to send her an article tomorrow.</div><div class="sec">Based on</div>${mem('Sarah from work is moving to Seattle in December','Memory')}${rem('Send Sarah the article','Reminder · Pending · Tomorrow')}<div class="bottom"><div class="btn ghost">Ask by voice or type…</div></div>${nav('Ask Huf')}` },
+];
+
+// draw journey nodes
+const svg = document.querySelector('.journey svg');
+const xs = [0, 140, 280, 420, 560, 700, 820];
+const NS = 'http://www.w3.org/2000/svg';
+const lastEdge = document.createElementNS(NS, 'path');
+lastEdge.setAttribute('class', 'edge'); lastEdge.setAttribute('d', 'M810 60 H820'); svg.appendChild(lastEdge);
+screens.forEach((s, i) => {
+  const g = document.createElementNS(NS, 'g');
+  g.setAttribute('class', 'node'); g.setAttribute('tabindex', '0'); g.setAttribute('role', 'tab');
+  g.setAttribute('aria-label', s.label);
+  const w = i === 6 ? 80 : 110;
+  g.innerHTML = `<rect x="${xs[i]}" y="35" width="${w}" height="50" rx="6"/><text class="n" x="${xs[i] + 10}" y="53">${i + 1}</text><text x="${xs[i] + 10}" y="72">${s.label}</text>`;
+  g.addEventListener('click', () => show(i));
+  g.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); show(i); } });
+  svg.appendChild(g);
+});
+
+let cur = 0;
+function show(i) {
+  cur = (i + screens.length) % screens.length;
+  const s = screens[cur];
+  document.querySelectorAll('.node').forEach((n, j) => { n.classList.toggle('on', j === cur); n.setAttribute('aria-selected', j === cur); });
+  document.getElementById('phone').innerHTML = s.phone();
+  document.getElementById('info').innerHTML =
+    `<h3>${s.label}</h3><div class="src">${s.src}</div><p class="what">${s.what}</p>
+     <h4>How we’ll know it works</h4><ul class="crit">${s.crit.map(c => `<li>${c}</li>`).join('')}</ul>
+     <h4>What if…</h4><ul class="crit states">${s.states.map(c => `<li>${c}</li>`).join('')}</ul>`;
+}
+document.getElementById('prev').onclick = () => show(cur - 1);
+document.getElementById('next').onclick = () => show(cur + 1);
+show(0);
+</script>
+</body>
+</html>

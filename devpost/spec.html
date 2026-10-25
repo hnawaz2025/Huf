@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Huf — Technical Spec</title>
+<!-- Companion view of devpost/spec.md. The Markdown file is canonical. -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ivory: #F8F5EE; --surface: #FFFDF9; --ink: #1F1D47; --muted: #6E6A86; --line: #E7E2D8;
+    --lav: #B9B0DA; --lav-soft: #ECE8F6; --rem: #F1EADB; --rem-ink: #6B5320; --code: #F1EEE6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --ivory: #14132A; --surface: #1C1B36; --ink: #ECEAF7; --muted: #A09CBB; --line: #2E2C50;
+      --lav: #8C83C2; --lav-soft: #28264A; --rem: #3A3220; --rem-ink: #E9D3A0; --code: #24223F; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--ivory); color: var(--ink);
+    font: 16px/1.55 Inter, ui-sans-serif, -apple-system, "Helvetica Neue", Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 48px 20px 80px; }
+  .eyebrow { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  h1 { font-size: 40px; letter-spacing: -.03em; margin: 6px 0 4px; font-weight: 700; }
+  h1 .dot { color: var(--lav); }
+  .sub { color: var(--muted); margin: 0 0 14px; max-width: 640px; }
+  .status { display: inline-block; font-size: 12px; font-weight: 600; padding: 3px 9px; border-radius: 4px; background: var(--rem); color: var(--rem-ink); }
+  h2 { font-size: 13px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 600; margin: 56px 0 14px; }
+  .plain { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .plain > div { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 16px; font-size: 14px; }
+  .plain .k { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 600; }
+  .plain .t { font-weight: 700; font-size: 17px; margin: 2px 0 6px; }
+  code, .mono { font: 12.5px ui-monospace, SFMono-Regular, Menlo, monospace; }
+  code { background: var(--code); padding: 1px 5px; border-radius: 4px; }
+
+  .arch { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 12px; overflow-x: auto; }
+  .arch svg { min-width: 760px; width: 100%; height: auto; display: block; }
+  .box rect { fill: var(--surface); stroke: var(--line); stroke-width: 1.5; transition: fill .25s, stroke .25s; }
+  .box text { fill: var(--ink); font-family: Inter, ui-sans-serif, sans-serif; transition: fill .25s; }
+  .box .s { fill: var(--muted); font-size: 11px; }
+  .box.hot rect { fill: var(--ink); stroke: var(--ink); }
+  .box.hot text, .box.hot .s { fill: var(--ivory); }
+  .zone { fill: none; stroke: var(--line); stroke-dasharray: 4 4; }
+  .zlabel { fill: var(--muted); font: 600 10px Inter, sans-serif; letter-spacing: .1em; }
+  .flow { stroke: var(--line); stroke-width: 2; fill: none; transition: stroke .25s; }
+  .flow.hot { stroke: var(--lav); stroke-width: 3; }
+  .flab { fill: var(--muted); font: 500 10.5px Inter, sans-serif; }
+
+  .stepper { margin-top: 14px; display: grid; grid-template-columns: 1fr; gap: 12px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chips button { font: 600 12.5px Inter, ui-sans-serif, sans-serif; border: 1px solid var(--line); background: transparent; color: var(--ink); padding: 6px 10px; border-radius: 6px; cursor: pointer; }
+  .chips button[aria-pressed="true"] { background: var(--ink); color: var(--ivory); border-color: var(--ink); }
+  .stepcard { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 18px 20px; }
+  .stepcard h3 { margin: 0 0 6px; font-size: 18px; letter-spacing: -.01em; }
+  .stepcard p { margin: 0 0 10px; }
+  .meta { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tag { font-size: 11.5px; padding: 2px 8px; border-radius: 4px; background: var(--lav-soft); }
+  .tag.f { background: var(--code); font-family: ui-monospace, Menlo, monospace; }
+  .tag.p { background: var(--rem); color: var(--rem-ink); }
+
+  details { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; margin-bottom: 8px; }
+  summary { padding: 13px 18px; font-weight: 600; cursor: pointer; list-style: none; display: flex; gap: 10px; align-items: baseline; }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: "+"; margin-left: auto; color: var(--muted); font-weight: 400; }
+  details[open] summary::after { content: "–"; }
+  summary .why { font-weight: 400; color: var(--muted); font-size: 14px; }
+  details .body { padding: 0 18px 14px; font-size: 14px; }
+  details .body p { margin: 0 0 8px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th, td { text-align: left; padding: 7px 8px; border-top: 1px solid var(--line); vertical-align: top; }
+  th { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 600; border-top: none; }
+  pre { background: var(--code); border-radius: 6px; padding: 12px 14px; overflow-x: auto; font-size: 12.5px; line-height: 1.5; margin: 0; }
+  .ground { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .ground > div { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px; font-size: 13.5px; }
+  .ground .n { font-size: 11px; color: var(--muted); font-weight: 600; }
+  .ground b { display: block; margin: 2px 0 4px; }
+  @media (max-width: 760px) { .plain, .ground { grid-template-columns: 1fr; } }
+  footer { margin-top: 56px; font-size: 13px; color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">Devpost Learn · Technical Spec</div>
+  <h1>huf<span class="dot">.</span></h1>
+  <p class="sub">The blueprint: three pieces on your Mac, how a thought moves through them, and where every PRD behavior lives.</p>
+  <span class="status" id="status">Approved</span>
+
+  <h2>Three pieces, in plain language</h2>
+  <div class="plain">
+    <div><div class="k">In Chrome</div><div class="t">The app</div>TypeScript + React. Screens, the mic, live captions via Chrome’s Web Speech API. Never talks to Claude directly.</div>
+    <div><div class="k">On your Mac</div><div class="t">The server</div>Python + FastAPI. Holds your API key in <code>.env</code>, asks Claude to sort and to answer, saves and edits items.</div>
+    <div><div class="k">One file</div><div class="t">The database</div>SQLite in <code>server/huf.db</code>. Every memory and reminder lives here, so it survives refresh and restart.</div>
+  </div>
+
+  <h2>Follow a thought through the system</h2>
+  <div class="arch">
+    <svg viewBox="0 0 900 320" aria-label="Architecture: app in Chrome talks to the Python server, which talks to SQLite and to Claude.">
+      <rect class="zone" x="10" y="20" width="250" height="285" rx="10"/><text class="zlabel" x="24" y="40">CHROME</text>
+      <rect class="zone" x="300" y="20" width="400" height="285" rx="10"/><text class="zlabel" x="314" y="40">YOUR MAC · PYTHON SERVER</text>
+      <rect class="zone" x="740" y="20" width="150" height="285" rx="10"/><text class="zlabel" x="754" y="40">INTERNET</text>
+
+      <g class="box" id="b-you"><rect x="30" y="58" width="210" height="54" rx="8"/><text x="46" y="82" font-weight="700" font-size="14">You</text><text class="s" x="46" y="100">speak, type, tap</text></g>
+      <g class="box" id="b-app"><rect x="30" y="140" width="210" height="54" rx="8"/><text x="46" y="164" font-weight="700" font-size="14">React app</text><text class="s" x="46" y="182">screens · state · api.ts</text></g>
+      <g class="box" id="b-speech"><rect x="30" y="214" width="210" height="50" rx="8"/><text x="46" y="236" font-weight="700" font-size="13">Web Speech API</text><text class="s" x="46" y="252">useSpeech.ts · live captions</text></g>
+
+      <g class="box" id="b-routes"><rect x="320" y="58" width="170" height="54" rx="8"/><text x="336" y="82" font-weight="700" font-size="14">Routes</text><text class="s" x="336" y="100">main.py · /api/*</text></g>
+      <g class="box" id="b-llm"><rect x="510" y="58" width="170" height="54" rx="8"/><text x="526" y="82" font-weight="700" font-size="14">llm.py</text><text class="s" x="526" y="100">extract · answer</text></g>
+      <g class="box" id="b-ground"><rect x="510" y="140" width="170" height="54" rx="8"/><text x="526" y="164" font-weight="700" font-size="13">Grounding check</text><text class="s" x="526" y="182">drop fake IDs</text></g>
+      <g class="box" id="b-db"><rect x="320" y="200" width="170" height="64" rx="8"/><text x="336" y="226" font-weight="700" font-size="14">SQLite</text><text class="s" x="336" y="244">db.py · huf.db</text></g>
+
+      <g class="box" id="b-claude"><rect x="755" y="58" width="120" height="54" rx="8"/><text x="771" y="82" font-weight="700" font-size="14">Claude</text><text class="s" x="771" y="100">Sonnet 5.5</text></g>
+      <g class="box" id="b-google"><rect x="755" y="214" width="120" height="50" rx="8"/><text x="771" y="236" font-weight="700" font-size="13">Google</text><text class="s" x="771" y="252">speech service</text></g>
+
+      <path class="flow" id="f-you-app" d="M135 112 V140"/>
+      <path class="flow" id="f-app-speech" d="M135 194 V214"/>
+      <path class="flow" id="f-speech-google" d="M240 239 C 450 325, 650 325, 755 239"/>
+      <path class="flow" id="f-app-routes" d="M240 160 C 280 160, 280 85, 320 85"/>
+      <path class="flow" id="f-routes-llm" d="M490 85 H510"/>
+      <path class="flow" id="f-llm-claude" d="M680 85 H755"/>
+      <path class="flow" id="f-llm-ground" d="M595 112 V140"/>
+      <path class="flow" id="f-ground-routes" d="M510 167 C 470 167, 440 140, 420 112"/>
+      <path class="flow" id="f-routes-db" d="M405 112 V200"/>
+      <text class="flab" x="688" y="104">typed JSON</text>
+      <text class="flab" x="248" y="120">/api</text>
+    </svg>
+  </div>
+
+  <div class="stepper">
+    <div class="chips" id="chips" role="group" aria-label="Journey steps"></div>
+    <div class="stepcard" id="stepcard" aria-live="polite"></div>
+  </div>
+
+  <h2>How Huf avoids making things up</h2>
+  <div class="ground">
+    <div><span class="n">1</span><b>Only saved items</b>Claude gets every saved item with its ID — nothing else to draw from.</div>
+    <div><span class="n">2</span><b>Fixed answer shape</b><code>found</code>, <code>answer</code>, <code>used_item_ids</code> — guaranteed by the Pydantic schema.</div>
+    <div><span class="n">3</span><b>Server decides the cards</b>IDs that don’t exist are dropped. Cards come from SQLite, not from Claude.</div>
+    <div><span class="n">4</span><b>Honest fallback</b>Not found, or no real IDs left → “I don’t have anything saved about that yet.”</div>
+  </div>
+  <p class="sub" style="margin-top:12px">Checked by <code>test_grounding.py</code>, by editing Seattle → Portland and watching the answer change, and by asking about something never saved.</p>
+
+  <h2>Components — each with its PRD home</h2>
+  <div id="components"></div>
+
+  <h2>Data</h2>
+  <details open>
+    <summary>Table <code>items</code> <span class="why">one table, person stored as spoken</span></summary>
+    <div class="body"><table>
+      <tr><th>Column</th><th>Example</th></tr>
+      <tr><td><code>kind</code></td><td>memory · reminder</td></tr>
+      <tr><td><code>text</code></td><td>Sarah from work is moving to Seattle in December</td></tr>
+      <tr><td><code>person</code></td><td>Sarah from work</td></tr>
+      <tr><td><code>due_text</code> · <code>due_date</code></td><td>“tomorrow morning” · 2026-10-26 (no time invented)</td></tr>
+      <tr><td><code>recurrence</code></td><td>monthly (label only)</td></tr>
+      <tr><td><code>status</code></td><td>pending · completed (reminders only)</td></tr>
+      <tr><td><code>id</code>, <code>source_transcript</code>, <code>created_at</code>, <code>updated_at</code></td><td>bookkeeping</td></tr>
+    </table></div>
+  </details>
+  <details>
+    <summary>What survives a refresh <span class="why">and what doesn’t</span></summary>
+    <div class="body"><table>
+      <tr><th>Data</th><th>Lives in</th><th>After refresh</th></tr>
+      <tr><td>Saved memories &amp; reminders</td><td>SQLite</td><td>Still there</td></tr>
+      <tr><td>Review drafts</td><td>React state</td><td>Gone — never saved</td></tr>
+      <tr><td>Live transcript</td><td>React state</td><td>Gone</td></tr>
+      <tr><td>Ask Huf chat</td><td>React state</td><td>Gone (PRD decision)</td></tr>
+      <tr><td>API key</td><td><code>server/.env</code></td><td>Stays; git-ignored</td></tr>
+    </table></div>
+  </details>
+  <details>
+    <summary>Server API <span class="why">seven endpoints</span></summary>
+    <div class="body"><table>
+      <tr><th>Endpoint</th><th>Does</th></tr>
+      <tr><td><code>GET /api/items</code></td><td>List everything, newest first</td></tr>
+      <tr><td><code>POST /api/extract</code></td><td>Transcript + today → draft items (nothing saved)</td></tr>
+      <tr><td><code>POST /api/items</code></td><td>Save reviewed drafts</td></tr>
+      <tr><td><code>PATCH /api/items/{id}</code></td><td>Edit fields or toggle status</td></tr>
+      <tr><td><code>DELETE /api/items/{id}</code></td><td>Delete</td></tr>
+      <tr><td><code>POST /api/ask</code></td><td>Question + today → grounded answer + cards</td></tr>
+      <tr><td><code>GET /api/health</code></td><td>Server up? API key present?</td></tr>
+    </table></div>
+  </details>
+
+  <h2>Run it</h2>
+  <details open>
+    <summary>Two terminals, one Chrome tab <span class="why">local only — no deployment</span></summary>
+    <div class="body">
+<pre># once
+cd server &amp;&amp; /usr/local/bin/python3.12 -m venv .venv
+.venv/bin/pip install -r requirements.txt &amp;&amp; cp .env.example .env   # add your key in .env
+cd ../web &amp;&amp; npm install
+
+# every time
+cd server &amp;&amp; .venv/bin/uvicorn main:app --reload --port 8000     # terminal 1
+cd web &amp;&amp; npm run dev                                           # terminal 2</pre>
+      <p style="margin-top:10px">Open <code>http://localhost:5173</code> in Chrome → DevTools → device toolbar → <b>iPhone 15 Pro</b>. For the recording, delete <code>server/huf.db</code> first so Home starts fresh.</p>
+    </div>
+  </details>
+
+  <h2>Simplified on purpose · still to verify</h2>
+  <details>
+    <summary>Simplifications <span class="why">engineering judgment, nothing faked</span></summary>
+    <div class="body"><ul>
+      <li>All items to Claude instead of a vector database — dozens of items fit easily.</li>
+      <li>One table; person as spoken text — matches “keep context as given.”</li>
+      <li>Three tabs as state, no router. Recurrence is a label, not a schedule.</li>
+      <li>Local only; demo in desktop Chrome at iPhone size.</li>
+      <li>No sample data, no simulated answers — every answer comes from real Claude calls on real saved data.</li>
+    </ul></div>
+  </details>
+  <details>
+    <summary>Verify early in the build <span class="why">things I couldn’t confirm from here</span></summary>
+    <div class="body"><ul>
+      <li>Reuse existing Python 3.12 (Intel, under Rosetta) for the project venv.</li>
+      <li><code>messages.parse()</code> with <code>effort: low</code>, and whether the refusal fallback works with <code>parse()</code>.</li>
+      <li>Chrome speech recognition on this Mac: permission prompt and silence timing.</li>
+    </ul></div>
+  </details>
+
+  <footer>Companion to <code>devpost/spec.md</code> — the Markdown file is the source of truth.</footer>
+</div>
+
+<script>
+const steps = [
+  { t: 'Open Huf', d: 'Chrome loads the app; it asks the server for saved items. First time: nothing saved, so Home shows only the greeting and mic.',
+    hot: ['b-you','b-app','b-routes','b-db'], flows: ['f-you-app','f-app-routes','f-routes-db'], files: ['App.tsx','api.ts','main.py','db.py'], prd: 'The Core Journey · Home at a Glance' },
+  { t: 'Tap mic & speak', d: 'useSpeech starts Chrome’s speech recognition. Chrome sends audio to Google’s speech service; words stream back as live captions.',
+    hot: ['b-you','b-app','b-speech','b-google'], flows: ['f-you-app','f-app-speech','f-speech-google'], files: ['useSpeech.ts','MicButton.tsx','Home.tsx'], prd: 'Capture by Voice' },
+  { t: 'Tap Done → sort', d: 'The app sends the transcript plus today’s date and timezone to /api/extract. llm.py asks Claude for an Extraction in a fixed Pydantic shape. Nothing is saved yet.',
+    hot: ['b-app','b-routes','b-llm','b-claude'], flows: ['f-app-routes','f-routes-llm','f-llm-claude'], files: ['api.ts','main.py','llm.py','schemas.py'], prd: 'Sorting Thoughts into Memories and Reminders' },
+  { t: 'Review & save', d: 'Drafts appear as cards you can edit or remove. Tap Save both → /api/items writes rows to SQLite and returns them with IDs. Home updates.',
+    hot: ['b-you','b-app','b-routes','b-db'], flows: ['f-you-app','f-app-routes','f-routes-db'], files: ['Review.tsx','ItemEditor.tsx','main.py','db.py'], prd: 'Review Before Saving' },
+  { t: 'Memories & refresh', d: 'Memories lists items from SQLite. Edit, delete, or toggle Pending/Completed via PATCH/DELETE. Refresh: everything reloads from huf.db.',
+    hot: ['b-app','b-routes','b-db'], flows: ['f-app-routes','f-routes-db'], files: ['Memories.tsx','ItemCard.tsx','db.py'], prd: 'Memories' },
+  { t: 'Ask Huf', d: 'Your question goes to /api/ask. The server loads every saved item and sends them with IDs to Claude, which must answer only from them and cite the IDs used.',
+    hot: ['b-app','b-routes','b-db','b-llm','b-claude'], flows: ['f-app-routes','f-routes-db','f-routes-llm','f-llm-claude'], files: ['AskHuf.tsx','main.py','llm.py'], prd: 'Ask Huf' },
+  { t: 'Grounding check', d: 'The server drops any ID that doesn’t exist and loads the real cards from SQLite. Not found → the fixed honest sentence. Then the answer and cards go back to the app.',
+    hot: ['b-llm','b-ground','b-routes','b-db','b-app'], flows: ['f-llm-ground','f-ground-routes','f-routes-db','f-app-routes'], files: ['llm.py','main.py','test_grounding.py'], prd: 'Ask Huf · States and Boundaries' },
+];
+
+const components = [
+  ['App Shell and Navigation', 'Three tabs as state; loads items once and refreshes after changes. No settings icon.', 'Screens and Layout', 'App.tsx · NavBar.tsx'],
+  ['Speech Capture (useSpeech)', 'Wraps Chrome speech recognition: live captions, start/stop, friendly errors (permission, no speech, network, unsupported).', 'Capture by Voice · Ask Huf', 'useSpeech.ts'],
+  ['Home Screen', 'idle → listening → processing → review → saved. Coming up (3 pending) and Recently remembered (2), hidden when empty.', 'Capture by Voice · Home at a Glance', 'Home.tsx · MicButton.tsx'],
+  ['Typed Input', '“Type instead” swaps the mic for a text box; same processing and review.', 'Typed Capture', 'Home.tsx'],
+  ['Review Screen', 'Transcript, editable cards, remove, count-aware save. Keeps drafts on failure.', 'Review Before Saving', 'Review.tsx · ItemEditor.tsx'],
+  ['Item Card and Editor', 'Kind icon, text, person, due/recurrence, status — shared by Review and Memories.', 'Sorting Thoughts · Memories', 'ItemCard.tsx · ItemEditor.tsx'],
+  ['Memories Screen', 'Everything saved, newest first; detail sheet with edit, delete, Pending/Completed.', 'Memories', 'Memories.tsx'],
+  ['Ask Huf Screen', 'Chat in memory; text or mic; answer with “Based on” cards; inline errors.', 'Ask Huf', 'AskHuf.tsx'],
+  ['API Client', 'Typed fetch wrappers; adds today, weekday, timezone.', 'all', 'api.ts'],
+  ['Server Routes', 'Seven endpoints; loads .env; creates DB on startup.', 'all', 'main.py'],
+  ['Storage', 'SQLite table + list/insert/update/delete.', 'States and Boundaries', 'db.py'],
+  ['Extraction', 'Prompt with today’s date and rules (split items, keep person as said, no invented times) → Extraction schema.', 'Sorting Thoughts into Memories and Reminders', 'llm.py · schemas.py'],
+  ['Grounded Answering', 'All items with IDs + question → Answer schema → server keeps only real IDs.', 'Ask Huf', 'llm.py · main.py'],
+];
+document.getElementById('components').innerHTML = components.map(([n, d, p, f]) =>
+  `<details><summary>${n} <span class="why">${f}</span></summary><div class="body"><p>${d}</p><div class="meta"><span class="tag p">prd.md › ${p}</span></div></div></details>`).join('');
+
+const chips = document.getElementById('chips');
+steps.forEach((s, i) => {
+  const b = document.createElement('button');
+  b.textContent = `${i + 1} · ${s.t}`;
+  b.setAttribute('aria-pressed', 'false');
+  b.addEventListener('click', () => showStep(i));
+  chips.appendChild(b);
+});
+function showStep(i) {
+  const s = steps[i];
+  chips.querySelectorAll('button').forEach((b, j) => b.setAttribute('aria-pressed', j === i));
+  document.querySelectorAll('.box').forEach(g => g.classList.toggle('hot', s.hot.includes(g.id)));
+  document.querySelectorAll('.flow').forEach(p => p.classList.toggle('hot', s.flows.includes(p.id)));
+  document.getElementById('stepcard').innerHTML =
+    `<h3>${i + 1}. ${s.t}</h3><p>${s.d}</p><div class="meta">${s.files.map(f => `<span class="tag f">${f}</span>`).join('')}<span class="tag p">prd.md › ${s.prd}</span></div>`;
+}
+showStep(0);
+</script>
+</body>
+</html>
