@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { extract } from "../api";
+import { ItemCard } from "../components/ItemCard";
 import { MicButton } from "../components/MicButton";
-import type { DraftItem } from "../types";
+import type { DraftItem, Item } from "../types";
 import { Review } from "./Review";
 
 type Phase =
@@ -11,17 +12,41 @@ type Phase =
   | { name: "review"; transcript: string; items: DraftItem[] }
   | { name: "error"; transcript: string; message: string };
 
-export function Home() {
+interface Props {
+  items: Item[];
+  onSaved: (items: Item[]) => void;
+}
+
+/** Next pending reminders first (undated last), then the newest memories. */
+function comingUp(items: Item[]) {
+  return items
+    .filter((i) => i.kind === "reminder" && i.status === "pending")
+    .sort((a, b) => (a.due_date ?? "9999").localeCompare(b.due_date ?? "9999"))
+    .slice(0, 3);
+}
+
+function recentlyRemembered(items: Item[]) {
+  return items.filter((i) => i.kind === "memory").slice(0, 2);
+}
+
+export function Home({ items, onSaved }: Props) {
   const [phase, setPhase] = useState<Phase>({ name: "idle" });
   const [draft, setDraft] = useState("");
+  const [toast, setToast] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(null), 2600);
+    return () => clearTimeout(t);
+  }, [toast]);
 
   async function makeSense(transcript: string) {
     const text = transcript.trim();
     if (!text) return;
     setPhase({ name: "processing", transcript: text });
     try {
-      const items = await extract(text);
-      setPhase({ name: "review", transcript: text, items });
+      const found = await extract(text);
+      setPhase({ name: "review", transcript: text, items: found });
     } catch (e) {
       setPhase({ name: "error", transcript: text, message: (e as Error).message });
     }
@@ -33,7 +58,19 @@ export function Home() {
   }
 
   if (phase.name === "review") {
-    return <Review transcript={phase.transcript} items={phase.items} onStartOver={startOver} />;
+    return (
+      <Review
+        transcript={phase.transcript}
+        initialItems={phase.items}
+        saved={items}
+        onStartOver={startOver}
+        onSaved={(saved) => {
+          onSaved(saved);
+          startOver();
+          setToast(saved.length === 1 ? "Saved. Huf will remember." : `Saved ${saved.length} items. Huf will remember.`);
+        }}
+      />
+    );
   }
 
   if (phase.name === "processing") {
@@ -74,6 +111,9 @@ export function Home() {
     );
   }
 
+  const upcoming = comingUp(items);
+  const recent = recentlyRemembered(items);
+
   return (
     <section className="home">
       <h1 className="greeting">What’s on your mind?</h1>
@@ -104,13 +144,45 @@ export function Home() {
           </div>
         </form>
       ) : (
-        <div className="capture">
+        <div className={`capture${upcoming.length || recent.length ? " capture--compact" : ""}`}>
           {/* Voice capture arrives in slice 4; until then the mic opens typing. */}
           <MicButton label="Tap to talk" onClick={() => setPhase({ name: "typing" })} />
           <p className="capture__hint">Tap to talk</p>
           <button type="button" className="link" onClick={() => setPhase({ name: "typing" })}>
             Type instead
           </button>
+        </div>
+      )}
+
+      {phase.name === "idle" && upcoming.length > 0 && (
+        <section className="section" aria-labelledby="coming-up">
+          <h2 id="coming-up" className="eyebrow">
+            Coming up
+          </h2>
+          <div className="stack">
+            {upcoming.map((i) => (
+              <ItemCard key={i.id} item={i} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {phase.name === "idle" && recent.length > 0 && (
+        <section className="section" aria-labelledby="recently">
+          <h2 id="recently" className="eyebrow">
+            Recently remembered
+          </h2>
+          <div className="stack">
+            {recent.map((i) => (
+              <ItemCard key={i.id} item={i} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {toast && (
+        <div className="toast" role="status">
+          {toast}
         </div>
       )}
     </section>

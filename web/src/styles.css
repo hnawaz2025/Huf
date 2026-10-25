@@ -436,3 +436,211 @@ textarea {
   align-items: center;
   gap: 5px;
 }
+
+/* ---------- card actions (Review) ---------- */
+
+.card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.card__actions {
+  display: flex;
+  gap: 2px;
+  margin: -6px -8px -6px 0;
+}
+
+.text-btn {
+  background: none;
+  border: 0;
+  padding: 6px 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.text-btn:hover {
+  background: var(--lavender-soft);
+}
+
+.text-btn--quiet {
+  color: var(--muted);
+  font-weight: 500;
+}
+
+/* ---------- person chooser ---------- */
+
+.chooser {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+
+.chooser__label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.chooser__options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chip {
+  border: 1px solid var(--line);
+  background: transparent;
+  border-radius: var(--radius-sm);
+  padding: 6px 10px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: border-color 150ms, background 150ms;
+}
+
+.chip:hover {
+  border-color: var(--lavender);
+}
+
+.chip.is-on {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--ivory);
+}
+
+/* ---------- editor ---------- */
+
+.card--editing {
+  padding: 14px 16px 16px;
+  border-color: var(--lavender);
+}
+
+.editor {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.segmented {
+  display: inline-flex;
+  align-self: flex-start;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 2px;
+}
+
+.segmented button {
+  border: 0;
+  background: transparent;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.segmented button.is-on {
+  background: var(--lavender-soft);
+  color: var(--ink);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex: 1;
+  min-width: 0;
+}
+
+.field > span {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.field input,
+.field textarea,
+.field select {
+  font: inherit;
+  font-size: 15px;
+  color: var(--ink);
+  background: var(--ivory);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 9px 11px;
+  outline: none;
+  resize: none;
+  width: 100%;
+}
+
+.field input:focus,
+.field textarea:focus,
+.field select:focus {
+  border-color: var(--lavender);
+}
+
+.field-row {
+  display: flex;
+  gap: 10px;
+}
+
+.editor__done {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn--small {
+  padding: 8px 14px;
+  font-size: 14px;
+}
+
+/* ---------- home sections ---------- */
+
+.capture--compact {
+  margin-top: 40px;
+}
+
+.section {
+  margin-top: 40px;
+}
+
+/* ---------- feedback ---------- */
+
+.error {
+  margin: 14px 0 0;
+  font-size: 14px;
+  color: var(--danger);
+}
+
+.banner {
+  margin: 0 0 8px;
+  padding: 10px 12px;
+  font-size: 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--danger);
+}
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 28px;
+  transform: translateX(-50%);
+  background: var(--ink);
+  color: var(--ivory);
+  font-size: 14px;
+  font-weight: 500;
+  padding: 11px 16px;
+  border-radius: var(--radius-sm);
+  animation: rise 220ms var(--ease);
+  white-space: nowrap;
+}

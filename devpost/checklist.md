@@ -5,7 +5,7 @@ status: approved
 
 # Build Checklist
 
-Build mode: [learn or fast — record once chosen; carry forward on resume]
+Build mode: fast (learner said "move on" after two prompts; can switch to learn anytime)
 
 ## Slices
 
@@ -19,7 +19,7 @@ Build mode: [learn or fast — record once chosen; carry forward on resume]
   Learner check: Start both servers, open http://localhost:5173 at iPhone 15 Pro size, tap "Type instead," type the Sarah sentence, and check that the two cards say what you meant and look like Huf rather than a generic AI app.
   Commit: `Sort typed thoughts into memory and reminder cards with Claude`
 
-- [ ] **2. Review, edit, and save — and it's still there after a refresh**
+- [x] **2. Review, edit, and save — and it's still there after a refresh**
   Becomes usable: On Review you can edit any card's text, kind, person, or date, remove a card, and tap "Save both." If the person you named matches more than one saved person, the card lets you choose which one (or keep it as said). Huf confirms and returns Home, where the reminder appears under Coming up and the memory under Recently remembered. Refresh or restart the server: still there.
   Why now: Persistence is where the data model can be wrong, and the recall slice depends on real saved items. Completes the capture half of the core loop.
   PRD ref: `prd.md > Review Before Saving`, `prd.md > Home at a Glance`, `prd.md > States and Boundaries` (Persistence, First use, Ambiguous person)

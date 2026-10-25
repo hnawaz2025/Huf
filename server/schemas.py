@@ -32,3 +32,18 @@ class ExtractRequest(BaseModel):
 
 class ExtractResponse(BaseModel):
     items: list[DraftItem]
+
+
+class Item(DraftItem):
+    """A saved memory or reminder."""
+
+    id: str
+    status: Optional[Literal["pending", "completed"]] = None  # reminders only
+    source_transcript: str
+    created_at: str
+    updated_at: str
+
+
+class SaveRequest(BaseModel):
+    items: list[DraftItem] = Field(min_length=1)
+    source_transcript: str
