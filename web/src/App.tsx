@@ -1,15 +1,17 @@
 import { useEffect, useState } from "react";
 import { listItems } from "./api";
 import { NavBar, type Tab } from "./components/NavBar";
-import { AskIcon, HomeIcon } from "./icons";
+import { AskIcon, HomeIcon, StackIcon } from "./icons";
 import { AskHuf, type Turn } from "./screens/AskHuf";
 import { Home } from "./screens/Home";
+import { Memories } from "./screens/Memories";
 import type { Item } from "./types";
 
-type TabId = "home" | "ask";
+type TabId = "home" | "memories" | "ask";
 
 const TABS: Tab<TabId>[] = [
   { id: "home", label: "Home", icon: <HomeIcon /> },
+  { id: "memories", label: "Memories", icon: <StackIcon /> },
   { id: "ask", label: "Ask Huf", icon: <AskIcon /> },
 ];
 
@@ -45,6 +47,7 @@ export function App() {
       )}
       <main className="screen">
         {tab === "home" && <Home items={items} onSaved={refresh} />}
+        {tab === "memories" && <Memories items={items} onChanged={refresh} onGoHome={() => setTab("home")} />}
         {tab === "ask" && <AskHuf turns={turns} setTurns={setTurns} />}
       </main>
       <NavBar tabs={TABS} current={tab} onChange={setTab} />

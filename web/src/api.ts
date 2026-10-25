@@ -55,3 +55,19 @@ export function ask(question: string): Promise<AskResult> {
     body: JSON.stringify({ question, ...localContext() }),
   });
 }
+
+export type ItemPatch = Partial<Pick<Item, "kind" | "text" | "person" | "due_text" | "due_date" | "recurrence" | "status">>;
+
+export function updateItem(id: string, patch: ItemPatch): Promise<Item> {
+  return request<Item>(`/api/items/${id}`, { method: "PATCH", body: JSON.stringify(patch) });
+}
+
+export async function deleteItem(id: string): Promise<void> {
+  let res: Response;
+  try {
+    res = await fetch(`/api/items/${id}`, { method: "DELETE" });
+  } catch {
+    throw new Error("Can't reach Huf's server — is it running?");
+  }
+  if (!res.ok && res.status !== 404) throw new Error("Couldn’t delete — try again.");
+}

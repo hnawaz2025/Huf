@@ -4,12 +4,14 @@ interface Props {
   item: DraftItem;
   onChange: (item: DraftItem) => void;
   onDone: () => void;
+  doneLabel?: string;
+  busy?: boolean;
 }
 
 const REPEATS = ["", "daily", "weekly", "monthly", "yearly"];
 
-/** Edit every field Huf extracted. Used on Review (and later in Memories). */
-export function ItemEditor({ item, onChange, onDone }: Props) {
+/** Edit every field Huf extracted. Used on Review and in the Memories detail sheet. */
+export function ItemEditor({ item, onChange, onDone, doneLabel = "Done", busy = false }: Props) {
   const set = (patch: Partial<DraftItem>) => onChange({ ...item, ...patch });
   const setKind = (kind: Kind) =>
     set(kind === "memory" ? { kind, due_text: null, due_date: null, recurrence: null } : { kind });
@@ -70,8 +72,8 @@ export function ItemEditor({ item, onChange, onDone }: Props) {
       )}
 
       <div className="editor__done">
-        <button type="button" className="btn btn--small" onClick={onDone} disabled={!item.text.trim()}>
-          Done
+        <button type="button" className="btn btn--small" onClick={onDone} disabled={!item.text.trim() || busy}>
+          {doneLabel}
         </button>
       </div>
     </div>

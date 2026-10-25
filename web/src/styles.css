@@ -896,3 +896,161 @@ textarea {
   border-color: var(--lavender);
   color: var(--ink-soft);
 }
+
+/* ---------- memories ---------- */
+
+.memories__count {
+  margin: 8px 0 0;
+}
+
+.memories__list {
+  margin-top: 24px;
+}
+
+.memories__empty {
+  margin: 10px 0 0;
+  line-height: 1.5;
+  max-width: 30ch;
+}
+
+.memories__cta {
+  align-self: flex-start;
+  margin-top: 20px;
+}
+
+.card-button {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  text-align: left;
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.card-button .card {
+  transition: border-color 150ms, transform 150ms var(--ease);
+}
+
+.card-button:hover .card {
+  border-color: var(--lavender);
+}
+
+.card-button:active .card {
+  transform: scale(0.99);
+}
+
+.card-button:focus-visible {
+  outline: 2px solid var(--lavender);
+  outline-offset: 2px;
+}
+
+.card--done .card__text {
+  text-decoration: line-through;
+  text-decoration-color: var(--muted);
+  color: var(--muted);
+}
+
+.card--done::before {
+  background: var(--line);
+}
+
+.card__done {
+  color: var(--ink-soft);
+  font-weight: 600;
+}
+
+/* ---------- detail sheet ---------- */
+
+.sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(31, 29, 71, 0.28);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 10;
+  animation: fade 180ms ease-out;
+}
+
+.sheet {
+  width: 100%;
+  max-width: 440px;
+  max-height: 88dvh;
+  overflow-y: auto;
+  background: var(--ivory);
+  border-radius: 16px 16px 0 0;
+  padding: 10px 20px calc(20px + env(safe-area-inset-bottom));
+  box-shadow: 0 -8px 30px rgba(31, 29, 71, 0.08);
+  animation: slide-up 260ms var(--ease);
+}
+
+.sheet__grip {
+  width: 36px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--line);
+  margin: 0 auto 16px;
+}
+
+.sheet__source {
+  margin: 16px 0 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
+
+.sheet__source .eyebrow {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.sheet__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.sheet__actions .btn {
+  flex: 1;
+}
+
+.sheet__actions .sheet__primary {
+  flex-basis: 100%;
+}
+
+.sheet__confirm p {
+  margin: 20px 0 0;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.sheet__cancel {
+  display: block;
+  margin: 14px auto 0;
+}
+
+.btn--danger {
+  color: var(--danger);
+}
+
+.btn--danger-solid {
+  background: var(--danger);
+  border-color: var(--danger);
+  color: var(--ivory);
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes slide-up {
+  from {
+    transform: translateY(24px);
+    opacity: 0.6;
+  }
+}

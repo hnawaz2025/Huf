@@ -6,11 +6,11 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Response
 
 import db
 import llm
-from schemas import AskRequest, AskResponse, ExtractRequest, ExtractResponse, Item, SaveRequest
+from schemas import AskRequest, AskResponse, ExtractRequest, ExtractResponse, Item, ItemPatch, SaveRequest
 
 NOTHING_SAVED = "I don't have anything saved about that yet."
 
@@ -54,6 +54,26 @@ def save_items(req: SaveRequest) -> list[Item]:
     if not drafts:
         raise HTTPException(status_code=422, detail="Nothing to save.")
     return db.insert_items(drafts, req.source_transcript)
+
+
+@app.patch("/api/items/{item_id}", response_model=Item)
+def edit_item(item_id: str, patch: ItemPatch) -> Item:
+    changes = patch.model_dump(exclude_unset=True)
+    if "text" in changes and not (changes["text"] or "").strip():
+        raise HTTPException(status_code=422, detail="Text can't be empty.")
+    if "kind" in changes and changes["kind"] is None:
+        raise HTTPException(status_code=422, detail="Kind is required.")
+    updated = db.update_item(item_id, changes)
+    if updated is None:
+        raise HTTPException(status_code=404, detail="Not found.")
+    return updated
+
+
+@app.delete("/api/items/{item_id}", status_code=204)
+def remove_item(item_id: str) -> Response:
+    if not db.delete_item(item_id):
+        raise HTTPException(status_code=404, detail="Not found.")
+    return Response(status_code=204)
 
 
 @app.post("/api/ask", response_model=AskResponse)

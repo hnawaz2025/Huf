@@ -49,6 +49,18 @@ class SaveRequest(BaseModel):
     source_transcript: str
 
 
+class ItemPatch(BaseModel):
+    """Any subset of an item's editable fields. Only fields sent are changed."""
+
+    kind: Optional[Literal["memory", "reminder"]] = None
+    text: Optional[str] = None
+    person: Optional[str] = None
+    due_text: Optional[str] = None
+    due_date: Optional[date] = None
+    recurrence: Optional[str] = None
+    status: Optional[Literal["pending", "completed"]] = None
+
+
 class Answer(BaseModel):
     """What Claude must return when answering from saved items."""
 

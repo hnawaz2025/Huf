@@ -49,7 +49,7 @@ Build mode: fast (learner said "move on" after two prompts; can switch to learn 
   Learner check: In Chrome at iPhone size, tap the mic, allow permission, say the Sarah sentence, watch the captions, tap Done, and confirm the same two cards appear. Then try the mic on Ask Huf.
   Commit: `Capture thoughts and questions by voice with live captions`
 
-- [ ] **5. Browse, edit, delete, and complete items in Memories — and Huf knows**
+- [x] **5. Browse, edit, delete, and complete items in Memories — and Huf knows**
   Becomes usable: The Memories tab lists everything saved, typed and with person. Tap an item to edit, delete, or toggle a reminder Pending ⇄ Completed. Mark "Send Sarah the article" done and Ask Huf says you already completed it. Edit Seattle → Portland and the answer changes.
   Why now: Completes the "find it in Memories" step of the journey and the status-aware recall the learner tied to accuracy. It depends on saving (2) and asking (3).
   PRD ref: `prd.md > Memories`, `prd.md > Ask Huf` (completed reminders, not hardcoded), `prd.md > States and Boundaries` (Empty Memories)

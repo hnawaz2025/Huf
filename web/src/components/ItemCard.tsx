@@ -1,10 +1,10 @@
 import type { ReactNode } from "react";
 import { dueLabel } from "../format";
 import { BookmarkIcon, ClockIcon, PersonIcon } from "../icons";
-import type { DraftItem } from "../types";
+import type { DraftItem, Item } from "../types";
 
 interface Props {
-  item: DraftItem;
+  item: DraftItem | Item;
   actions?: ReactNode; // e.g. Edit / Remove on Review
   children?: ReactNode; // e.g. the person chooser
 }
@@ -12,8 +12,9 @@ interface Props {
 export function ItemCard({ item, actions, children }: Props) {
   const isMemory = item.kind === "memory";
   const when = isMemory ? null : dueLabel(item);
+  const done = "status" in item && item.status === "completed";
   return (
-    <article className={`card card--${item.kind}`}>
+    <article className={`card card--${item.kind}${done ? " card--done" : ""}`}>
       <div className="card__top">
         <div className="card__kind">
           {isMemory ? <BookmarkIcon /> : <ClockIcon />}
@@ -22,7 +23,7 @@ export function ItemCard({ item, actions, children }: Props) {
         {actions && <div className="card__actions">{actions}</div>}
       </div>
       <p className="card__text">{item.text}</p>
-      {(item.person || when) && (
+      {(item.person || when || done) && (
         <div className="card__meta">
           {item.person && (
             <span className="card__person">
@@ -31,6 +32,7 @@ export function ItemCard({ item, actions, children }: Props) {
             </span>
           )}
           {when && <span>{when}</span>}
+          {done && <span className="card__done">Completed</span>}
         </div>
       )}
       {children}

@@ -3,7 +3,7 @@
 import os
 import sqlite3
 import uuid
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Iterable, Optional
 
@@ -99,3 +99,34 @@ def insert_items(drafts: list[DraftItem], source_transcript: str) -> list[Item]:
 def get_item(item_id: str) -> Optional[Item]:
     found = get_items_by_ids([item_id])
     return found[0] if found else None
+
+
+def update_item(item_id: str, changes: dict) -> Optional[Item]:
+    """Apply edits. Switching kind keeps the item consistent: memories have no dates or status."""
+    current = get_item(item_id)
+    if current is None:
+        return None
+    merged = current.model_dump()
+    merged.update(changes)
+    if merged["kind"] == "memory":
+        merged.update(due_text=None, due_date=None, recurrence=None, status=None)
+    elif merged["status"] is None:
+        merged["status"] = "pending"
+    if isinstance(merged["due_date"], date):
+        merged["due_date"] = merged["due_date"].isoformat()
+    merged["updated_at"] = _now()
+    with connect() as conn:
+        conn.execute(
+            """UPDATE items SET kind=?, text=?, person=?, due_text=?, due_date=?, recurrence=?, status=?, updated_at=?
+               WHERE id=?""",
+            (
+                merged["kind"], merged["text"], merged["person"], merged["due_text"], merged["due_date"],
+                merged["recurrence"], merged["status"], merged["updated_at"], item_id,
+            ),
+        )
+    return Item(**merged)
+
+
+def delete_item(item_id: str) -> bool:
+    with connect() as conn:
+        return conn.execute("DELETE FROM items WHERE id=?", (item_id,)).rowcount > 0
