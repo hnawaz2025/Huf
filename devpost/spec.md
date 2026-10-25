@@ -82,6 +82,11 @@ Open **http://localhost:5173** in Chrome → DevTools → Toggle device toolbar 
 
 **Demo recording (for `6-ship`):** start from an empty database (stop the server, delete `server/huf.db`, restart) so first-use Home shows. Record: Sarah capture → review → save → Memories → refresh → Ask Huf → brain dump. Required submission: 1–3 min video + public GitHub repo.
 
+**Shared (from `6-ship`):**
+- Demo video: https://youtube.com/shorts/G9DCEBNjf5M (public, checked without sign-in)
+- Public repository: https://github.com/hnawaz2025/Huf
+- Live deployment: none (optional; not chosen)
+
 ## Look and Feel
 
 From `prd.md > Look and Feel` — no new decisions.
