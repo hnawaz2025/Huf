@@ -9,7 +9,7 @@ Build mode: [learn or fast — record once chosen; carry forward on resume]
 
 ## Slices
 
-- [ ] **1. Type a thought and see Huf sort it into memory and reminder cards**
+- [x] **1. Type a thought and see Huf sort it into memory and reminder cards**
   Becomes usable: Open Huf in Chrome, tap "Type instead," enter the Sarah sentence, see "Making sense of your thoughts…" and then the transcript with one memory card and one reminder card (person "Sarah from work", reminder due tomorrow with its real date). The brain dump gives three reminders with resolved dates. Nothing is saved yet.
   Why now: This is half the kernel and the biggest unknown — real Claude structured outputs from Python. Bootstrapping (existing Python 3.12, venv, FastAPI, Vite/React, Inter, design tokens) happens here so every later slice lands on a running app. Typed input comes first because it exercises the kernel without depending on the microphone.
   PRD ref: `prd.md > Typed Capture`, `prd.md > Sorting Thoughts into Memories and Reminders`, `prd.md > The Core Journey` (steps 1, 4–5, 10)
@@ -99,3 +99,5 @@ Activity mode:
 - Visual design checkpoint added before slice 6 — learner wants a distinctive, premium consumer look reviewed before the demo.
 - Slice 4 marked essential — learner: working mic capture is not optional polish.
 - Working principle from the learner: at every checkpoint prefer a complete, reliable experience over new features; once the three demo cases work, focus on testing, visual polish, and the video.
+- Claude calls use `client.beta.messages.parse` (SDK 2.3.0) — the refusal fallback is only on the beta surface; verified in slice 1 together with `effort` + Pydantic output.
+- Until slice 4, the Home mic opens typing, and the nav bar is hidden until a second tab exists — so no visible button is a dead end mid-build.

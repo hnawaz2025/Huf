@@ -53,9 +53,7 @@ PRD ref: `prd.md > The Core Journey`.
 
 **Python version:** use the existing Python 3.12.11 at `/usr/local/bin/python3.12` (Intel build, runs under Rosetta) to create `server/.venv`. No new install; the global `python3` and Anaconda are left alone.
 
-**Verify early in the build (unconfirmed from here):**
-- Whether `client.messages.parse()` accepts `output_config={"effort": "low"}` alongside `output_format=`; if not, use `messages.create` with `output_config={"format": {...}, "effort": ...}` and parse JSON with the Pydantic model.
-- Whether the server-side fallback (`fallbacks="default"` with beta `server-side-fallback-2026-07-01`) works with `parse()` (likely needs `client.beta.messages.parse`). If not, keep plain `parse()` and treat `stop_reason == "refusal"` as a normal error state.
+**Verified in slice 1:** the installed SDK is `anthropic` 2.3.0. `client.beta.messages.parse(..., output_format=<Pydantic model>, output_config={"effort": "low"}, fallbacks="default", betas=["server-side-fallback-2026-07-01"])` works — the SDK merges `effort` and the schema into one `output_config`, and the beta `parse` accepts the server-side refusal fallback. A real Sarah extraction round-trip takes about 4 seconds.
 
 ## Where It Runs and How Someone Tries It
 
@@ -145,7 +143,7 @@ Opens `huf.db`, creates the `items` table if missing, and provides `list_items`,
 PRD ref: `prd.md > States and Boundaries` (Persistence).
 
 ### Extraction (`server/llm.py → extract_items`)
-Builds the extraction prompt: today's date, weekday, timezone; rules — split into separate items; `memory` for facts, `reminder` for things the user must do; keep person exactly as said ("Sarah from work"), `null` if none, never merge with another person; resolve relative dates to `due_date` (ISO) but keep the spoken phrase in `due_text`; never invent a time; set `recurrence` only when said ("monthly"). Calls `client.messages.parse(model="claude-sonnet-5-5", output_format=Extraction, ...)`. Post-checks: drop items with empty text; null out an unparseable `due_date`; memories get no `status`.
+Builds the extraction prompt: today's date, weekday, timezone; rules — split into separate items; `memory` for facts, `reminder` for things the user must do; keep person exactly as said ("Sarah from work"), `null` if none, never merge with another person; resolve relative dates to `due_date` (ISO) but keep the spoken phrase in `due_text`; never invent a time; set `recurrence` only when said ("monthly"). Calls `client.beta.messages.parse(model="claude-sonnet-5-5", output_format=Extraction, ...)` (beta surface for the refusal fallback). Post-checks: drop items with empty text; null out an unparseable `due_date`; memories get no `status`.
 PRD ref: `prd.md > Sorting Thoughts into Memories and Reminders`.
 
 ### Grounded Answering (`server/llm.py → answer_question`)
@@ -235,7 +233,7 @@ Huf/
 ### Claude API (Anthropic)
 - **Model:** `claude-sonnet-5-5` (learner's choice). Pricing: $2 / M input tokens, $10 / M output tokens. Each Huf call is roughly 1–3K tokens → well under a cent per call. Docs: https://platform.claude.com/docs/en/about-claude/models/overview.md · pricing: https://platform.claude.com/docs/en/about-claude/pricing.md
 - **Auth:** `ANTHROPIC_API_KEY` in `server/.env`; the SDK reads it from the environment (`anthropic.Anthropic()`).
-- **Call shape (both functions):** `client.messages.parse(model="claude-sonnet-5-5", max_tokens=4000, system=<rules>, messages=[{"role":"user","content":<payload>}], output_format=<Extraction|Answer>)` → `response.parsed_output` is a validated Pydantic object. Check `response.stop_reason` first (`refusal` / `max_tokens` → error state). Effort `low` intended for speed (verify, see Stack).
+- **Call shape (both functions):** `client.beta.messages.parse(model="claude-sonnet-5-5", max_tokens=4000, system=<rules>, messages=[{"role":"user","content":<payload>}], output_format=<Extraction|Answer>)` → `response.parsed_output` is a validated Pydantic object. Check `response.stop_reason` first (`refusal` / `max_tokens` → error state). Effort `low` intended for speed (verify, see Stack).
 - **Refusal fallback:** enabled by default — `fallbacks="default"` with beta `server-side-fallback-2026-07-01` (Claude API only). Learner may turn it off. Docs: https://platform.claude.com/docs/en/build-with-claude/refusals-and-fallback
 - **Errors:** catch `anthropic.RateLimitError`, `anthropic.APIStatusError`, `anthropic.APIConnectionError` (most-specific first) → HTTP 502 with a friendly message. SDK retries 429/5xx twice automatically.
 - **SDK docs:** https://github.com/anthropics/anthropic-sdk-python
@@ -299,7 +297,7 @@ Clarified by design: Claude receives only saved items with IDs, must return `fou
 **Related learning thread:** structured outputs (Pydantic `Extraction`) and persistent retrieval (SQLite + all-items context) are exercised directly in the extraction and answering components — no extra tooling added for learning.
 
 **To verify early in the build**
-- `parse()` + `effort` combination, and fallback support with `parse()` (see Stack).
+- ~~`parse()` + `effort`, fallback with `parse()`~~ — verified in slice 1 (see Stack).
 - Web Speech API behavior on this Mac/Chrome (permission prompt, `no-speech` timing).
 
 **Carried from `prd.md > Open Questions`**
