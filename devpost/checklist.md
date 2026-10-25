@@ -39,7 +39,7 @@ Build mode: fast (learner said "move on" after two prompts; can switch to learn 
   Learner check: Ask Huf the Sarah question, check the answer and the cards under it, then ask about something you never told Huf.
   Commit: `Answer questions from saved items with grounded citations`
 
-- [ ] **4. Speak instead of typing — live captions, Done, and graceful mic errors**
+- [x] **4. Speak instead of typing — live captions, Done, and graceful mic errors**
   Becomes usable: Tap the mic on Home: it expands with lavender rings, your words appear as live captions, tap Done → same sorting and review as typing. The small mic on Ask Huf works the same way. Denied permission, silence, or an unsupported browser show a clear message with Try again / Type instead.
   Why now: **Essential, not polish** — working mic capture and transcription is required for the demo. It rides on a working kernel; adding it after slices 1–3 means a mic problem can't block the core. It's also the riskiest browser piece, so it comes before management and polish.
   PRD ref: `prd.md > Capture by Voice`, `prd.md > Ask Huf` (voice), `prd.md > States and Boundaries` (mic denied, transcription fails)
@@ -71,7 +71,7 @@ Build mode: fast (learner said "move on" after two prompts; can switch to learn 
 
 ## Hands-on Checkpoints
 
-- [ ] Early usable behavior explored — after slice 3: the whole kernel works by typing (capture → save → ask). Feedback here can still shape voice, Memories, and polish.
+- [x] Early usable behavior explored — after slice 3: the whole kernel works by typing (capture → save → ask). Feedback here can still shape voice, Memories, and polish. Learner: "it all works perfectly"; asked that Ask Huf get voice (already planned in slice 4).
 - [ ] Visual design checkpoint — after slice 5, before slice 6: review every screen against `spec.md > Look and Feel` for a distinctive, minimal, premium consumer feel (not generic AI styling); agreed fixes recorded and done before the demo check.
 - [ ] Final kick-the-tires exploration and feedback completed
 
@@ -102,3 +102,5 @@ Activity mode:
 - Claude calls use `client.beta.messages.parse` (SDK 2.3.0) — the refusal fallback is only on the beta surface; verified in slice 1 together with `effort` + Pydantic output.
 - Until slice 4, the Home mic opens typing, and the nav bar is hidden until a second tab exists — so no visible button is a dead end mid-build.
 - Answer prompt tuned to sound like a friend recalling ("Sarah from work told you…") rather than naming app internals ("saved", "pending") — first live answers read mechanical against the PRD's example.
+- Slice 4 mechanical checks use a dev-only speech test double (`window.__hufFakeSpeech`, honored only when `import.meta.env.DEV`) injected by the verification script; it is absent from the production build. Real recognition is verified by the learner in Chrome.
+- Speech keeps listening through pauses (Chrome ends sessions after silence; the hook restarts and keeps prior text) until Done; an empty Done reports "didn't hear anything" rather than sending blank text.

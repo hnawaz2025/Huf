@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { ask } from "../api";
 import { ItemCard } from "../components/ItemCard";
+import { MicButton } from "../components/MicButton";
 import { SendIcon } from "../icons";
 import type { Item } from "../types";
+import { SPEECH_MESSAGES, useSpeech } from "../useSpeech";
 
 export type Turn =
   | { id: number; role: "you"; text: string }
@@ -21,6 +23,8 @@ export function AskHuf({ turns, setTurns }: Props) {
   const [question, setQuestion] = useState("");
   const [waiting, setWaiting] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);
+  const speech = useSpeech();
+  const listening = speech.status === "listening";
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
@@ -44,6 +48,13 @@ export function AskHuf({ turns, setTurns }: Props) {
       setWaiting(false);
     }
   }
+
+  async function finishSpeaking() {
+    const said = await speech.stop();
+    if (said) send(said);
+  }
+
+  const heard = [speech.finalText, speech.interim].filter(Boolean).join(" ");
 
   return (
     <section className="ask">
@@ -101,6 +112,12 @@ export function AskHuf({ turns, setTurns }: Props) {
         <div ref={endRef} />
       </div>
 
+      {speech.status === "error" && speech.error && (
+        <p className="voice-note" role="alert">
+          {SPEECH_MESSAGES[speech.error]}
+        </p>
+      )}
+
       <form
         className="ask__input"
         onSubmit={(e) => {
@@ -109,15 +126,26 @@ export function AskHuf({ turns, setTurns }: Props) {
         }}
       >
         <input
-          value={question}
+          value={listening ? heard : question}
+          readOnly={listening}
           onChange={(e) => setQuestion(e.target.value)}
-          placeholder="Ask Huf…"
+          placeholder={listening ? "Listening…" : "Ask Huf…"}
           aria-label="Your question"
           enterKeyHint="send"
+          className={listening ? "is-listening" : ""}
         />
-        <button type="submit" className="ask__send" aria-label="Ask" disabled={!question.trim() || waiting}>
-          <SendIcon />
-        </button>
+        {listening || !question.trim() ? (
+          <MicButton
+            size="small"
+            listening={listening}
+            label={listening ? "Done — ask Huf" : "Ask by voice"}
+            onClick={listening ? finishSpeaking : speech.start}
+          />
+        ) : (
+          <button type="submit" className="ask__send" aria-label="Ask" disabled={waiting}>
+            <SendIcon />
+          </button>
+        )}
       </form>
     </section>
   );

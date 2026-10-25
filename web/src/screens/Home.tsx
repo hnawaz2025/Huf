@@ -3,6 +3,7 @@ import { extract } from "../api";
 import { ItemCard } from "../components/ItemCard";
 import { MicButton } from "../components/MicButton";
 import type { DraftItem, Item } from "../types";
+import { SPEECH_MESSAGES, useSpeech } from "../useSpeech";
 import { Review } from "./Review";
 
 type Phase =
@@ -33,6 +34,7 @@ export function Home({ items, onSaved }: Props) {
   const [phase, setPhase] = useState<Phase>({ name: "idle" });
   const [draft, setDraft] = useState("");
   const [toast, setToast] = useState<string | null>(null);
+  const speech = useSpeech();
 
   useEffect(() => {
     if (!toast) return;
@@ -55,6 +57,41 @@ export function Home({ items, onSaved }: Props) {
   function startOver() {
     setDraft("");
     setPhase({ name: "idle" });
+  }
+
+  async function done() {
+    const said = await speech.stop();
+    if (said) makeSense(said);
+  }
+
+  function typeInstead() {
+    speech.cancel();
+    setPhase({ name: "typing" });
+  }
+
+  if (speech.status === "listening") {
+    return (
+      <section className="listening" aria-live="polite">
+        <p className="caption">
+          {speech.finalText || speech.interim ? (
+            <>
+              {speech.finalText} <span className="caption__interim">{speech.interim}</span>
+            </>
+          ) : (
+            <span className="caption__interim">Go ahead — I’m listening.</span>
+          )}
+        </p>
+        <div className="capture capture--live">
+          <MicButton listening label="Done" onClick={done} />
+          <p className="capture__hint">Listening…</p>
+        </div>
+        <div className="listening__done">
+          <button type="button" className="btn btn--wide" onClick={done}>
+            Done
+          </button>
+        </div>
+      </section>
+    );
   }
 
   if (phase.name === "review") {
@@ -145,12 +182,29 @@ export function Home({ items, onSaved }: Props) {
         </form>
       ) : (
         <div className={`capture${upcoming.length || recent.length ? " capture--compact" : ""}`}>
-          {/* Voice capture arrives in slice 4; until then the mic opens typing. */}
-          <MicButton label="Tap to talk" onClick={() => setPhase({ name: "typing" })} />
-          <p className="capture__hint">Tap to talk</p>
-          <button type="button" className="link" onClick={() => setPhase({ name: "typing" })}>
-            Type instead
-          </button>
+          <MicButton label="Tap to talk" onClick={speech.start} />
+          {speech.status === "error" && speech.error ? (
+            <div className="voice-error" role="alert">
+              <p>{SPEECH_MESSAGES[speech.error]}</p>
+              <div className="voice-error__actions">
+                {speech.error !== "unsupported" && (
+                  <button type="button" className="btn btn--small" onClick={speech.start}>
+                    Try again
+                  </button>
+                )}
+                <button type="button" className="btn btn--small btn--ghost" onClick={typeInstead}>
+                  Type instead
+                </button>
+              </div>
+            </div>
+          ) : (
+            <>
+              <p className="capture__hint">Tap to talk</p>
+              <button type="button" className="link" onClick={typeInstead}>
+                Type instead
+              </button>
+            </>
+          )}
         </div>
       )}
 

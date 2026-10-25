@@ -149,6 +149,7 @@ textarea {
 
 .mic {
   position: relative;
+  flex: none;
   width: 112px;
   height: 112px;
   border: 0;
@@ -793,4 +794,105 @@ textarea {
 .ask__send:disabled {
   opacity: 0.3;
   cursor: default;
+}
+
+/* ---------- listening ---------- */
+
+.listening {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.caption {
+  margin: 28px 0 0;
+  min-height: 5.6em;
+  font-size: 24px;
+  line-height: 1.4;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.caption__interim {
+  color: var(--muted);
+  transition: color 200ms;
+}
+
+.capture--live {
+  margin-top: 36px;
+}
+
+.listening__done {
+  margin-top: auto;
+  padding-top: 32px;
+}
+
+.btn--wide {
+  width: 100%;
+  padding: 14px 18px;
+  font-size: 16px;
+}
+
+.voice-error {
+  margin-top: 22px;
+  max-width: 300px;
+  text-align: center;
+}
+
+.voice-error p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--ink-soft);
+}
+
+.voice-error__actions {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.voice-note {
+  margin: 16px 0 0;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--danger);
+}
+
+/* small mic in the Ask Huf input row */
+
+.mic--small {
+  width: 46px;
+  height: 46px;
+}
+
+.mic--small .mic__core {
+  border-radius: var(--radius);
+}
+
+.mic--small .mic__ring {
+  inset: -4px;
+  border-radius: 13px;
+  border-color: transparent;
+}
+
+.mic--small .mic__ring--2 {
+  inset: -9px;
+  border-radius: 16px;
+}
+
+.mic--small.mic--live .mic__core {
+  transform: none;
+  background: var(--ink-soft);
+}
+
+.mic--small.mic--live .mic__ring {
+  border-color: var(--lavender);
+}
+
+.ask__input input.is-listening {
+  border-color: var(--lavender);
+  color: var(--ink-soft);
 }
