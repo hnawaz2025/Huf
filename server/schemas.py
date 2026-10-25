@@ -47,3 +47,23 @@ class Item(DraftItem):
 class SaveRequest(BaseModel):
     items: list[DraftItem] = Field(min_length=1)
     source_transcript: str
+
+
+class Answer(BaseModel):
+    """What Claude must return when answering from saved items."""
+
+    found: bool
+    answer: str
+    used_item_ids: list[str]
+
+
+class AskRequest(BaseModel):
+    question: str = Field(min_length=1)
+    today: date
+    weekday: str
+    timezone: str
+
+
+class AskResponse(BaseModel):
+    answer: str
+    items: list[Item]

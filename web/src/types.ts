@@ -11,6 +11,11 @@ export interface DraftItem {
   recurrence: string | null;
 }
 
+export interface AskResult {
+  answer: string;
+  items: Item[];
+}
+
 export interface Item extends DraftItem {
   id: string;
   status: "pending" | "completed" | null; // reminders only

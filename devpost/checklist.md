@@ -29,7 +29,7 @@ Build mode: fast (learner said "move on" after two prompts; can switch to learn 
   Learner check: Type the Sarah sentence, change the reminder text slightly, save, see both items on Home, refresh the page, and confirm they're still there.
   Commit: `Review, edit, and save items to SQLite`
 
-- [ ] **3. Ask Huf about Sarah and get a grounded answer with the cards it used**
+- [x] **3. Ask Huf about Sarah and get a grounded answer with the cards it used**
   Becomes usable: On the Ask Huf tab, type "What did Sarah from work tell me, and do I owe her anything?" and get a conversational answer mentioning Seattle in December and the article, with the memory and reminder cards beneath. Ask about something never saved and get "I don't have anything saved about that yet."
   Why now: This is the climax of the kernel and the demo. Building it third means the whole kernel works by typing before any voice or polish work.
   PRD ref: `prd.md > Ask Huf`, `prd.md > The Core Journey` (step 9)
@@ -101,3 +101,4 @@ Activity mode:
 - Working principle from the learner: at every checkpoint prefer a complete, reliable experience over new features; once the three demo cases work, focus on testing, visual polish, and the video.
 - Claude calls use `client.beta.messages.parse` (SDK 2.3.0) — the refusal fallback is only on the beta surface; verified in slice 1 together with `effort` + Pydantic output.
 - Until slice 4, the Home mic opens typing, and the nav bar is hidden until a second tab exists — so no visible button is a dead end mid-build.
+- Answer prompt tuned to sound like a friend recalling ("Sarah from work told you…") rather than naming app internals ("saved", "pending") — first live answers read mechanical against the PRD's example.

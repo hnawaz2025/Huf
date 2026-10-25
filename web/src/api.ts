@@ -1,4 +1,4 @@
-import type { DraftItem, Item } from "./types";
+import type { AskResult, DraftItem, Item } from "./types";
 
 /** Today's date as the person's device sees it — Huf resolves "tomorrow" from this, not the server clock. */
 function localContext() {
@@ -46,5 +46,12 @@ export function saveItems(items: DraftItem[], sourceTranscript: string): Promise
   return request<Item[]>("/api/items", {
     method: "POST",
     body: JSON.stringify({ items, source_transcript: sourceTranscript }),
+  });
+}
+
+export function ask(question: string): Promise<AskResult> {
+  return request<AskResult>("/api/ask", {
+    method: "POST",
+    body: JSON.stringify({ question, ...localContext() }),
   });
 }
