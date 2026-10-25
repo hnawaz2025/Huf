@@ -11,6 +11,8 @@ function localContext() {
   };
 }
 
+const UNREACHABLE = "Can't reach Huf's server — is it running?";
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   let res: Response;
   try {
@@ -19,15 +21,25 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
       headers: { "Content-Type": "application/json", ...init?.headers },
     });
   } catch {
-    throw new Error("Can't reach Huf's server — is it running?");
+    throw new Error(UNREACHABLE);
   }
   if (!res.ok) {
-    if (res.status === 502 || res.status === 500) {
-      throw new Error("Huf couldn't make sense of that right now.");
-    }
+    // Huf's own errors carry a JSON `detail`; anything else means the dev proxy couldn't reach the server.
+    const detail: string | undefined = await res
+      .json()
+      .then((b) => (typeof b?.detail === "string" ? b.detail : undefined))
+      .catch(() => undefined);
+    if (res.status >= 500 && detail === undefined) throw new Error(UNREACHABLE);
+    if (detail?.includes("API key")) throw new Error("Huf’s Claude API key is missing or invalid — check server/.env.");
+    if (res.status === 502) throw new Error("Huf couldn't make sense of that right now.");
     throw new Error("Something went wrong. Please try again.");
   }
   return res.json() as Promise<T>;
+}
+
+/** Is the server up, and does it have a Claude key? */
+export async function health(): Promise<{ ok: boolean; has_key: boolean }> {
+  return request("/api/health");
 }
 
 export async function extract(transcript: string): Promise<DraftItem[]> {

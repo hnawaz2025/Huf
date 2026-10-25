@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { listItems } from "./api";
+import { health, listItems } from "./api";
 import { NavBar, type Tab } from "./components/NavBar";
 import { AskIcon, HomeIcon, StackIcon } from "./icons";
 import { AskHuf, type Turn } from "./screens/AskHuf";
@@ -30,7 +30,12 @@ export function App() {
       .catch((e: Error) => setLoadError(e.message));
 
   useEffect(() => {
-    refresh();
+    health()
+      .then((h) => {
+        if (!h.has_key) setLoadError("Huf’s server is missing its Claude API key — add it to server/.env and restart.");
+        else refresh();
+      })
+      .catch((e: Error) => setLoadError(e.message));
   }, []);
 
   return (

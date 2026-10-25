@@ -59,7 +59,7 @@ Build mode: fast (learner said "move on" after two prompts; can switch to learn 
   Learner check: Open Memories, mark the article reminder done, ask Huf about Sarah again, then edit the memory to a different city and ask once more.
   Commit: `Manage memories and reminders with status-aware recall`
 
-- [ ] **6. The full demo runs end to end, checked automatically and ready to record**
+- [x] **6. The full demo runs end to end, checked automatically and ready to record**
   Becomes usable: A `demo_check.py` script runs all three demo cases against real Claude and reports pass/fail; the README explains setup, running, and the recording steps; server-down and missing-key states show friendly messages; a fresh database gives the clean first-use Home for recording.
   Why now: Turns the working pieces into a reliable demo and proves the three demo cases together right before final review.
   PRD ref: `prd.md > The Core Journey`, `prd.md > What We're Building`, `prd.md > States and Boundaries`
@@ -72,7 +72,7 @@ Build mode: fast (learner said "move on" after two prompts; can switch to learn 
 ## Hands-on Checkpoints
 
 - [x] Early usable behavior explored — after slice 3: the whole kernel works by typing (capture → save → ask). Feedback here can still shape voice, Memories, and polish. Learner: "it all works perfectly"; asked that Ask Huf get voice (already planned in slice 4).
-- [ ] Visual design checkpoint — after slice 5, before slice 6: review every screen against `spec.md > Look and Feel` for a distinctive, minimal, premium consumer feel (not generic AI styling); agreed fixes recorded and done before the demo check.
+- [x] Visual design checkpoint — after slice 5, before slice 6: review every screen against `spec.md > Look and Feel` for a distinctive, minimal, premium consumer feel (not generic AI styling); agreed fixes recorded and done before the demo check. Learner reviewed every screen: "everything looks amazing" — no changes requested (agent's noted options: stronger resting mic, listening-screen gap, smaller mic when Home has content, lighter card labels — not adopted).
 - [ ] Final kick-the-tires exploration and feedback completed
 
 ## Final Review
@@ -104,3 +104,4 @@ Activity mode:
 - Answer prompt tuned to sound like a friend recalling ("Sarah from work told you…") rather than naming app internals ("saved", "pending") — first live answers read mechanical against the PRD's example.
 - Slice 4 mechanical checks use a dev-only speech test double (`window.__hufFakeSpeech`, honored only when `import.meta.env.DEV`) injected by the verification script; it is absent from the production build. Real recognition is verified by the learner in Chrome.
 - Speech keeps listening through pauses (Chrome ends sessions after silence; the hook restarts and keeps prior text) until Done; an empty Done reports "didn't hear anything" rather than sending blank text.
+- Through the Vite proxy a stopped API server returns HTTP 500 rather than a network error, so the app treats any 5xx without Huf's JSON `detail` as "can't reach Huf's server"; a key problem surfaces as its own message, and a missing key is caught at load via `/api/health`.
