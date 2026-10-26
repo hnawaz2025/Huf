@@ -101,3 +101,7 @@ devpost/           planning documents
 - Runs locally, for one person, on one device. No accounts or sync.
 - Reminders are not delivered as notifications; recurrence is a label.
 - Voice capture needs Chrome (or Safari); typing works everywhere.
+
+## License
+
+[MIT](LICENSE). The Devpost Learn skill pack in `.agents/skills/` and `agent/skills/` is © Devpost, also MIT-licensed; its original notice is included alongside it.
